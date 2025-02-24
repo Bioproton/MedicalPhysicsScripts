@@ -1,0 +1,35 @@
+#!/bin/bash
+#simulation script to start multiple GATE simulations.
+#All variables set here will be overwritten if they are defined also in the main.mac file
+
+
+#constant values for all simulations
+beamType='Proton'
+beamEnergy=100
+primaries="1e8"
+siteRadius=2.2
+
+
+#for i in {50..100..50} #start end and step
+#for i in {1..10..1} #start end and step
+#do
+
+#START=$(($i-10))
+#END=$i
+#for fileName in $( seq $START $END )
+
+#Loop over the simulations to start them in parallel
+for fileName in {23..60}  #{first file number..last filenumber}
+do
+# echo "print i= $i and filename append nr: $fileName"
+Gate -a '[siteRadius,'$siteRadius'] [beamType,'$beamType'] [beamEnergy,'$beamEnergy'] [primaries,'$primaries'] [fileName,'$fileName']' main.mac & 
+
+done
+wait
+date
+
+#If we want to run new simulations after the first ones are done, we could start them here - check
+#done 
+
+
+
