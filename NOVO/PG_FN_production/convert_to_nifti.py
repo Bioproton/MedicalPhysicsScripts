@@ -53,10 +53,14 @@ def create_array(filepath,dicom_path,particle_type):
     files = os.listdir(filepath)
     coordinates = []
     errors = 0
+    # Reading pg and fn production data. The data is arranged in folder, with a file for each core used in the simulation. 
     for file in files:
         f = open(filepath + "/" + file, "r")
         for line in f:
             elements = np.array(line.split())
+            # This try-except loop was necessary because of a bug in the fortran file
+            # creating the simulation data (mgdraw_production.f). 
+            # should be fixed now. if so, errors list should be empty. 
             try:
                 if len(elements) < 15:
                     for i in range(len(elements)):
