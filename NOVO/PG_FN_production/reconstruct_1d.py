@@ -1,3 +1,6 @@
+''' Script for reconstructing the 1d histograms of pg/fn production. Load pg and fn nifti-images, and plot along depth-axis '''
+
+
 import os
 import nibabel as nib
 import numpy as np
