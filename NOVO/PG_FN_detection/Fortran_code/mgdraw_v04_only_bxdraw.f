@@ -5,15 +5,6 @@
 *                                                                      *
       SUBROUTINE MGDRAW ( ICODE, MREG )
 
-*****************ADDED BY SANDER****************************************
-* From my experience saving the file here reduces the simulation time  *
-* by about half. (It only opens once, not for every bxdraw entry)      *
-*      CHARACTER(LEN=50) :: Folder_path
-*      Folder_path = '/media/sf_Delt_mappe/'
-*      CHARACTER(LEN=75) :: File_path
-*      SAVE
-***************END ADDED BY SANDER**************************************
-
       INCLUDE '(DBLPRC)'
       INCLUDE '(DIMPAR)'
       INCLUDE '(IOUNIT)'
@@ -78,11 +69,13 @@
          END IF
          OPEN ( UNIT = IODRAW, FILE = FILNAM, STATUS = 'NEW', FORM =
      &          'UNFORMATTED' )
-
+* ADDED BY SANDER
+* In my experience,opens files here (only once) improves simulation runtime substantially*
          OPEN(UNIT=89, FILE = 'parts_leaving_target.txt', 
      &    STATUS='UNKNOWN')
          OPEN(UNIT=90, FILE = 'scintillator_regions.txt', 
      &    STATUS='UNKNOWN')
+*END ADDED BY SANDER
 
       END IF
 *  +-------------------------------------------------------------------*
@@ -120,14 +113,6 @@
 
       ENTRY BXDRAW ( ICODE, MREG, NEWREG, XSCO, YSCO, ZSCO )
 ***********************START BXDRAW CODE BY SANDER *********************
-      
-*      File_path = trim(Folder_path)//'testing/parts_leaving_target.txt'
-*      OPEN(UNIT=89, FILE = '/media/sf_Delt_mappe/dump/'//
-*     &    'parts_leaving_target.txt', STATUS='UNKNOWN')
-
-*      File_path = trim(Folder_path)//'scintillator_regions.txt'
-*      OPEN(UNIT=90, FILE = '/media/sf_Delt_mappe/dump/'//
-*     &    'scintillator_regions.txt' , STATUS='UNKNOWN')  
 
 * If particle is a photon (JTRACK = 7) and its previous interaction code is 101 or 106
 * Then it is a prompt gamma (scattered prompt gammas are not prompt gammas)
