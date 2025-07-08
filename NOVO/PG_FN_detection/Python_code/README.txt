@@ -9,3 +9,6 @@ mgdraw_bxdraw_plotter.py:
 
 mgdraw_output_merger_v2.py:
   Merged .txt FLUKA output-files with from individual spawns into one MERGED.txt-file for easier handling
+
+NOVO_detector_ab001_scintillator_regions.txt:
+  Sample file that it compatible with mgdraw_bxdraw_plotter.py
