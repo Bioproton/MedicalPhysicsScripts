@@ -8,7 +8,7 @@ mgdraw_output_merger_v2.py:
   Merged .txt FLUKA output-files with from individual spawns into one MERGED.txt-file for easier handling
 
 
-----------PLOTTING----------
+----------PLOTTING SCRIPTS----------
 mgdraw_bxdraw_plotter.py:
   Plots 13 figures to visualise "..._scintillator_regions.txt"-data genereated by mgdraw_v04_only_bxdraw.f
   Requires the usage of bxdraw_txt_file_reader.py and mgdraw_output_merger_v2.py
