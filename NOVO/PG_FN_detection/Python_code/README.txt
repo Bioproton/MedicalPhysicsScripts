@@ -24,6 +24,10 @@ mgdraw_particle_production_plotter.py
   Script to visualize production of FNs, PGs, neutrons and photons (Pinnsvinplott)
   Not currently actively used
   Can be used together with sample file prompt_gamma_2e6x5_'z001_FN_produced.txt
+
+mgdraw_txt_to_csv.py
+  Script that transforms a FLUKA .txt-output file into a .csv-file.
+  This was created to work with (and is currently only compatible to) prompt_gamma_300425_gammas_detected_merged.txt
   
 ----------SAMPLE FILES----------
 NOVO_detector_ab001_scintillator_regions.txt:
