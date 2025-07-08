@@ -305,6 +305,7 @@
 *       55: Void outside the detector                                  *
 *       56: Blackbody                                                  *
 * 57 - 152: Electric boxes at the ends of each bars                    *
+* 153- 200: Air pockets inside electric boxes                          *
 *
 * JTRACK = id of the current particle being tracked. If jtrack = 1 it  *
 * means that the particle that is being tracked is a proton.           *
@@ -379,7 +380,8 @@
              SPAUSR(3) = YSCO
              SPAUSR(4) = ZSCO
 
-*            Update TrackID values for PG (ParentID are always 1 for true FN/PG)
+*            Update TrackID values for PG (ParentID are always 1 for true FN/PG) 
+*            !ParentID and TrackID does not work properly!
 *
 *            ParentID
              ISPUSR(4) = 1
@@ -417,6 +419,7 @@
              SPAUSR(4) = ZSCO
 
 *            Update TrackID values for FN (ParentID are always 1 for true FN/PG)
+*            !ParentID and TrackID does not work properly!
 *
 *            ParentID
              ISPUSR(4) = 1
