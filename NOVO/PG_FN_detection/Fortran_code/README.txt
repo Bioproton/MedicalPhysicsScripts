@@ -9,7 +9,7 @@ mgdraw_v04_only_bxdraw.f
     - at events where a neutron or a photon exits the target -> ****parts_leaving_target.txt
 
 mgdraw_v03_detection.f
-  Incomplete Fortran scipt for FLUKA with the mgdraw subroutine that writes three outputs for detection purposes:
+  Incomplete and currently deprecated Fortran scipt for FLUKA with the mgdraw subroutine that writes three outputs for detection purposes:
     - UNIT=67: ****_flagged_pgs_fns.txt: Output on all FNs and PGs that are produced in the target
       -> Used as an information baseline to compare against what is detected
     - UNIT=80: ****_FN_PG_detected.txt: Output on all flagged FNs/PGs that interact in any scintillator element
@@ -20,3 +20,7 @@ mgdraw_v03_detection.f
       FN: Particle is a neutron, it was produced by a proton (1) by ICODE=101 inside the target (MREG==49)
       PG: Particle is a photon, it was produced by a proton (1) or a heavy ion (-2) in by ICODE=101 or ICODE=106 inside the target (MREG==49)
     If a FN/PG interacts in the target after production, or if it enters any electronic box, it is flagged as a non-FN/PG
+
+mgdraw_v05_detection.f
+  Fortran scipt for FLUKA with the mgdraw subroutine that is currently being worked on for detection of FN/PG (as of 05.08.25)
+  A description of the script is pending...
