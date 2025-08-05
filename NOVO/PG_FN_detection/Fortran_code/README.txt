@@ -17,6 +17,6 @@ mgdraw_v03_detection.f
     - UNIT=81: ****_non_FN_PG_detected.txt: Output on all flagged non-Fns/PGs that interact in any scintillator element
       -> ANY interaction will trigger an output, even irrelevant ones
     A particle will be flagged as a true FN/PG if:
-      FN: Particle is a neutron, it was produced by a proton (1) in by ICODE=101
-      PG: Particle is a photon, it was produced by a proton (1) or a heavy ion (-2) in by ICODE=101 or ICODE=106
+      FN: Particle is a neutron, it was produced by a proton (1) by ICODE=101 inside the target (MREG==49)
+      PG: Particle is a photon, it was produced by a proton (1) or a heavy ion (-2) in by ICODE=101 or ICODE=106 inside the target (MREG==49)
     If a FN/PG interacts in the target after production, or if it enters any electronic box, it is flagged as a non-FN/PG
