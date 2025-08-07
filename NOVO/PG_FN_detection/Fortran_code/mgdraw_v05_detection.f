@@ -103,6 +103,11 @@
 ****************END OF CODE BY ANNA****************************
 
       ENTRY BXDRAW ( ICODE, MREG, NEWREG, XSCO, YSCO, ZSCO )
+*
+*      When primary protons enters the target, set default FN/PG flags to 0
+            IF (NEWREG .EQ. 49 .AND. JTRACK .EQ. 1) THEN
+                  LLOUSE = 0
+            END IF
       RETURN
 *======================================================================*
 *                                                                      *
@@ -147,30 +152,6 @@
 *======================================================================*
 *                                                                      *
       ENTRY ENDRAW ( ICODE, MREG, RULL, XSCO, YSCO, ZSCO )
-
-***************START ADDED BY SANDER IN ENDRAW**************************
-* The goal of the code here is to estimate the energy deposition in the*
-* scintillators. Important steps will be to see if the energy          *
-* depositions are at the same coordinates as the interaction           *
-* coordinates found in usdraw.                                         *   
-    
-*     Opening/creating .txt-file for data dumping
-      OPEN(UNIT=91, FILE='Energy_deposition.txt', STATUS='UNKNOWN')
-*
-*     If an FN/PG causes an energy deposition in the scintillator bars
-      IF (LLOUSE .EQ. 1 .AND. MREG .GE. 1 .AND. MREG .LE. 48) THEN
-*
-*      Dump information about the energy deposition
-       WRITE(91, '(3I6,1X,3F11.6,1X,2I5,1X,2F11.6)')
-     &  NCASE, ICODE, JTRACK,
-     &  XSCO, YSCO, ZSCO,
-     &  MREG, NP, RULL, ATRACK*1E6
-
-
-       
-      END IF
-
-**************END ADDED BY SANDER IN ENDRAW*****************************
 
       IF ( .NOT. LFCOPE ) THEN
          LFCOPE = .TRUE.
@@ -325,8 +306,7 @@
 *
 *-----------------------INTERACTIONS IN TARGET-------------------------------
 *
-*     If the current region is the target (region 49), or if the current region
-      is 
+*     If the current region is the target (region 49)
       IF(MREG .EQ. 49) THEN
 
 *       Default flag of true FN/PG is 0 (False)
@@ -352,10 +332,6 @@
 *                 
 *           If the current secondary's kinetic energy is greater than 10 keV
             IF(Tki(IP) .GE. 1E-5) THEN
-
-*            Save information about the PG for later use
-             ISPUSR(2) = ICODE
-             ISPUSR(3) = JTRACK
 *           
 *            Kinetic energy of the secondary
              SPAUSR(1) = Tki(IP)
@@ -370,10 +346,6 @@
 *
 *           If the secondary's kinetic energy is greater than 100 keV
             IF(Tki(IP) .GE. 1E-4) THEN 
-
-*            Save information about the FN for later use
-             ISPUSR(2) = ICODE
-             ISPUSR(3) = JTRACK
 *
 *            Kinetic energy of the secondary
              SPAUSR(1) = Tki(IP)
@@ -389,95 +361,62 @@
       END IF    
 *       
 *------------------INTERACTIONS IN THE ELECTRONIC BOXES--------------------------
-      If an interaction happens in the electronic boxes, then the particle 
-      is not longer a true FN/PG-particle (loss of coincidence)
-
+*      If an interaction happens in the electronic boxes (or the void inside them), 
+*      then the particle is no longer a true FN/PG-particle (loss of coincidence)
+*
       IF (MREG .GE. 57) THEN
-        
-        SPAUSR(2) = XSCO
-        SPAUSR(3) = YSCO
-        SPAUSR(4) = ZSCO
-
+*
+*       Reset true FN/PG-flag to 0 (non-FN/PG)
+        LLOUSE = 0
+*
       END IF
 
 *----------------------INTERACTIONS IN THE DETECTOR------------------------------
-      OPEN(UNIT=80, FILE = 'FN_PG_detected.txt', STATUS='UNKNOWN')
-      OPEN(UNIT=81, FILE = 'non_FN_PG_detected.txt', STATUS='UNKNOWN')
+      OPEN(UNIT=80, 
+     &      FILE = 'scintillator_interactions.txt', STATUS='UNKNOWN')
 *
 *     If an interaction happens in the scintillator bars
-      IF(MREG .GE. 1 .AND. MREG .LE. 48) THEN
+      IF (MREG .GE. 1 .AND. MREG .LE. 48) THEN
 *
-*------------------------TRUE FN/PG OUTPUT----------------------------------------
-*      If the interaction involves a true FN/PG-particle
-       IF (LLOUSE .EQ. 1) THEN
+*      If a true FN/PG does something else that a 219/100, change LLOUSE flag (loss of coincidence)
+       IF(ICODE .NE. 219 .AND. ICODE .NE. 100 .AND. LLOUSE .EQ. 1) THEN
 *
-*       Loop over all the secondaries created in the interaction.
-        DO IP = 1, NP
-*         
+*        The true FN/PG is no longer direct from production
+         LLOUSE = 0
+       END IF
+*--------------------------------OUTPUT------------------------------------------
+*      Loop over all the secondaries created in the interaction.
+       DO IP = 1, NP
+
 *        Reassigning KPART(IP) to return something sensible (Carbon-12: -601200 -> -2 (Heavy ion))
          IF(KPART(IP) .LE. -300000) THEN
 
 *         Write output file: 'FN_PG_detected.txt'
-          WRITE(80,'(2I5,4I3,1X,2F11.6,1X,6F10.5,1X,2I5,1X,1F11.6)')
-     &     NCASE, ICODE, JTRACK, -2, 
+          WRITE(80,'(1I7,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
+     &     NCASE, ICODE, JTRACK, -2, LLOUSE, 
      &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
-     &     XSCO, YSCO, ZSCO, SPAUSR(2), SPAUSR(3), SPAUSR(4),
-     &     MREG, LTRACK, ATRACK*1E6
+     &     XSCO, YSCO, ZSCO, 
+     &     MREG, LTRACK, ATRACK*1E6,
+     &     SPAUSR(2), SPAUSR(3), SPAUSR(4)
 *
          ELSE
 
 *         Write output file: 'FN_PG_detected.txt' 
-          WRITE(80,'(2I5,4I3,1X,2F11.6,1X,6F10.5,1X,2I5,1X,1F11.6)')
-     &     NCASE, ICODE, JTRACK, KPART(IP), 
+          WRITE(80,'(1I7,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
+     &     NCASE, ICODE, JTRACK, KPART(IP), LLOUSE,
      &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
-     &     XSCO, YSCO, ZSCO, SPAUSR(2), SPAUSR(3), SPAUSR(4),
-     &     MREG, LTRACK, ATRACK*1E6
-         END IF
-*
-        END DO
-*    
-*---------------------NON-TRUE FN/PG OUTPUT-------------------------------------  
-*      If the particle interacting in the scintillator is not a true FN/PG
-       ELSE IF (LLOUSE .EQ. 0) THEN
-*
-*       Loop over all the secondaries created in the interaction.
-        DO IP = 1, NP
-*         
-*        Reassigning KPART(IP) to return something sensible (Carbon-12: -601200 -> -2 (Heavy ion))
-         IF(KPART(IP) .LE. -300000) THEN
-*
-*         Write output file: 'non_FN_PG_detected.txt' 
-          WRITE(81, '(6I6,1X,5F11.6,1X,2I5,1X,4F11.6)')
-     &     NCASE, ICODE, JTRACK, -2, 
-     &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
-     &     XSCO, YSCO, ZSCO,
-     &     MREG, LTRACK, ATRACK*1E6,     
-     &     Cxr(IP), Cyr(IP), Czr(IP)
-         ELSE
-
-*         Write output file: 'non_FN_PG_detected.txt' 
-          WRITE(81, '(6I6,1X,5F11.6,1X,2I5,1X,4F11.6)')
-     &     NCASE, ICODE, JTRACK, KPART(IP), 
-     &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
-     &     XSCO, YSCO, ZSCO,
+     &     XSCO, YSCO, ZSCO, 
      &     MREG, LTRACK, ATRACK*1E6,
-     &     Cxr(IP), Cyr(IP), Czr(IP)
-         END IF
-        END DO
-*
-       END IF
-*
+     &     SPAUSR(2), SPAUSR(3), SPAUSR(4)
+         END IF       
+
+       END DO
 *------------------------------END OF OUTPUT-----------------------------------------
 *     If the particle interacts in the void (in case of air), then it is no longer a true FN/PG
       ELSE IF (MREG .GE. 50 .AND. MREG .LE. 55) THEN
        LLOUSE = 0
       END IF
 
-** Updating mother photon energy to any upcoming interactions (daughter photon becomes new mother photon)
-*                    IF(KPART(IP) .EQ. 3 .AND. ICODE .EQ. 219) THEN
-*                        SPAUSR(1) = Tki(IP - 1)
-*                    END IF
-*  
 * Np = total number of secondaries *
 * Kpart (ip) = (Paprop) id of the ip_th secondary *
 * Cxr (ip) = x-axis direction cosine of the ip_th secondary *
@@ -499,9 +438,7 @@
       END IF
 * No output by default:
       RETURN
-      CLOSE(67)
       CLOSE(80)
-      CLOSE(81)
   
 *=== End of subrutine Mgdraw ==========================================*    
       END
