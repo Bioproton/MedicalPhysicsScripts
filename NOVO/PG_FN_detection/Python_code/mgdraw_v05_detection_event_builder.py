@@ -11,11 +11,8 @@ created by the function output_merger from mgdraw_output_merger_v2.
 '''
 
 import time
-import math
-import matplotlib.pyplot as plt
-#import matplotlib.animation as animation
-#from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-#from mpl_toolkits.mplot3d import Axes3D
+import csv
+import os
 from mgdraw_v05_output_reader import collect_txt_data
 from mgdraw_output_merger_v2 import output_merger
 
@@ -23,16 +20,44 @@ from mgdraw_output_merger_v2 import output_merger
 # ADD ONE FOLDER DIRECTORY
 
 # Run with 200 MeV protons, 2M x 5 primaries, massive NOVCoDA model
-folder_directory = r"C:\\Users\sathu8821\\OneDrive - University of Bergen\\NOVO\\FLUKA\\Delt mappe\\NOVCoDA_detection_07_08_25"
+#folder_directory = r"C:\\Users\sathu8821\\OneDrive - University of Bergen\\NOVO\\FLUKA\\Delt mappe\\NOVCoDA_detection_07_08_25"
+folder_directory = r"C:\\Users\sathu8821\\OneDrive - University of Bergen\\NOVO\\FLUKA\\Delt mappe\\NOVCoDA_detection_08_08_25"
 
 # ADD NUMBER OF PRIMARIES USED
-primaries_per_spawn = 2000000
+primaries_per_spawn = 20000000
 
 # ADD FLUKA RUN NAME
 fluka_run_name = None
 
 # ADD MGDRAW OUTPUT NAME
 mgdraw_output_name = None
+
+# Class used for storing events
+class InteractionEvent():
+
+    def __init__(self, crash_x, crash_y, crash_z, source_x, source_y, source_z, 
+                 energy_out, energy_in, particle_age, particle_generation,
+                 targetA, targetZ, icode, fnpg_flag, ncase):
+
+        self.crash_x = crash_x
+        self.crash_y = crash_y
+        self.crash_z = crash_z
+
+        self.source_x = source_x
+        self.source_y = source_y
+        self.source_z = source_z
+        
+        self.energy_in = energy_in
+        self.energy_out = energy_out
+        self.particle_age = particle_age
+
+        self.ncase = ncase
+        self.targetA = targetA
+        self.targetZ = targetZ
+        self.icode = icode
+
+        self.particle_generation = particle_generation
+        self.fnpg_flag = fnpg_flag
 
 #------------------------------------------END OF INPUTS--------------------------------------------------
 #---------------------------------DATA MERGING AND COLLECTION-------------------------------------------
@@ -44,135 +69,317 @@ merged_file_name = output_merger(
 
 file_adress = folder_directory + r"\\" + merged_file_name
 
-# Collecting data from the merged file
-ncases, icodes, particles_in, particles_out, fnpg_flags, \
-    targetZs, targetAs, energies_out, energies_in, \
-    crash_xs, crash_ys, crash_zs, \
-    regions, particles_generation, particles_age, \
-    source_xs, source_ys, source_zs = \
-    collect_txt_data(file_adress, primaries_per_spawn=primaries_per_spawn)
+def event_builder(ncases, icodes, particles_in,
+                    particles_out, fnpg_flags, 
+                    targetZs, targetAs, energies_out,
+                    energies_in, crash_xs, crash_ys,
+                    crash_zs, regions, particles_generation,
+                    particles_age, source_xs, source_ys,
+                    source_zs, print_results=True):
+    
+    # Time recorder
+    time_stamp = time.time()
+    print(f"\n-----------EVENT BUILDING-----------")
+
+    #-----------------------------EVENT BUILDING-------------------------------------
+
+    # List variable that will contain all gamma events [Event1, Event2, Event3, ...]
+    gamma_events = []
+
+    # List variable that will contain all neutron events [Event1, Event2, Event3, ...]
+    neutron_events = []
+
+    # Flag to indicate how many events are related to the "same" gamma/neutron
+    gamma_chain = 0
+    neutron_chain = 0
+
+    # Particle origin identification: The source coordinates
+    particle_id = [source_xs[0], source_ys[0], source_zs[0]]
+
+    # Variables to store previous gamma/neutron energies for chain logic checks
+    previous_gamma_energy = 0.0
+    previous_neutron_energy = 0.0
+
+    # List-tuple variable to store NCASEs for situations where gamma chains are >3 and neutron chains >2
+    # Entries will be on the form [(NCASE_1, LLOUSE_1), ..., (NCASE_n, LLOUSE_n)], i.e. [(23421,1), (425023,0)]
+    triple_gamma_chains = []
+    double_neutron_chains = []
+
+    # List variable to store interaction region (MREG) for gamma and neutron chains
+    gamma_chain_regions = []
+    neutron_chain_regions = []
+
+    # List variable to store NCASEs for irregular gamma and neutron chains for potential investigation
+    irregular_gammas = []
+    irregular_neutrons = []
 
 
-#-----------------------------EVENT BUILDING-------------------------------------
 
-# Dictionary that will contain all compact gamma events {"Event1": [ICODE, JTRACK, ...]}
-gamma_events = {}
+    # Looping over all entries
+    for index, icode in enumerate(icodes):
 
-# Dictionary that will contain all compact neutron events {"Event1": [ICODE, JTRACK, ...]}
-neutron_events = {}
+        if particle_id != [source_xs[index], source_ys[index], source_zs[index]]:
+            # If there is a new particle origin, then a new event chain is initiated
+            gamma_chain = 0
+            neutron_chain = 0
+            particle_id = [source_xs[index], source_ys[index], source_zs[index]]
 
-# Flag to indicate how many events are related to the "same" gamma/neutron
-gamma_chain = 0
-neutron_chain = 0
+        # Compton interaction (219) will always have two list entries: on each for the outgoing photon and electron
+        if icode == 219:
+            if particles_out[index] == 3:
+                # The compton electron is not interesting, so it is skipped
+                continue
 
-# Particle origin identification: The source coordinates
-particle_id = [source_xs[0], source_ys[0], source_zs[0]]
+            elif particles_out[index] == 7:
 
-# Variables to store previous gamma/neutron energies for chain logic checks
-previous_gamma_energy = 0.0
-previous_neutron_energy = 0.0
-
-# Looping over all entries
-for index, icode in enumerate(icodes):
-
-    if particle_id != [source_xs[index], source_ys[index], source_zs[index]]:
-        # If there is a new particle origin, then a new event chain is initiated
-        gamma_chain = 0
-        neutron_chain = 0
-        particle_id = [source_xs[index], source_ys[index], source_zs[index]]
-
-    # Compton interaction (219) will always have two list entries: on each for the outgoing photon and electron
-    if icode == 219:
-        if particles_out[index] == 3:
-            # The compton electron is not interesting, so it is skipped
-            continue
-
-        elif particles_out[index] == 7:
-            if gamma_chain == 0:
-                gamma_chain += 1
-
-            elif gamma_chain > 0:
-                if previous_gamma_energy != energies_in[index]:
+                if gamma_chain > 0 and previous_gamma_energy != energies_in[index]:
                     # The chain is irregular and might need supervision
                     # Chain is reset
-                    gamma_chain = 1
-                    print(f"Irregular gamma chain detected at {ncases[index]}" + \
-                          f" Prev: {previous_gamma_energy} vs. now {energies_in[index]}")
+                    gamma_chain = 0
+                    gamma_chain_regions = []
+                    irregular_gammas.append(ncases[index])
+                    
 
-                elif previous_gamma_energy == energies_in[index]:
-                    gamma_chain += 1
+                # Updating gamma chain
+                gamma_chain += 1
 
-            # Updating the previous_gamma_energy value
-            previous_gamma_energy = energies_out[index]
+                # Updating what scintillator/region the gamma interacted in
+                gamma_chain_regions.append(regions[index])
 
-            # Adding the Compton interaction to the gamma events
-            gamma_events["Event" + str(len(gamma_events) + 1)] = \
-                [crash_xs[index], crash_ys[index], crash_zs[index], \
+                # Updating the previous_gamma_energy value
+                previous_gamma_energy = energies_out[index]
+
+                # Adding the gamme Event to the gamma events list
+                gamma_events.append(
+                    InteractionEvent(
+                        crash_xs[index], crash_ys[index], crash_zs[index], \
+                        source_xs[index], source_ys[index], source_zs[index], \
+                        energies_out[index], energies_in[index], particles_age[index], \
+                        particles_generation[index], targetAs[index], targetZs[index], \
+                        icode, fnpg_flags[index], ncases[index])
+                        )
+                
+                if gamma_chain == 3:
+                    # If a triple gamma chain is found, append the NCASE and the FN/PG flag
+                    # Chains with values 3+ (4, 5, 6, ...) are not appended to avoid double counting
+                    triple_gamma_chains.append((ncases[index], fnpg_flags[index], gamma_chain_regions))
+
+            else:
+                assert 1==0, f"Non gamma/electron found in a Compton scatter: {particles_out[index]}" + \
+                    f" found in NCASE {ncases[index]}"
+                
+        #   221 events will alwyas have a single list entry
+        elif icode == 221:
+            # Photoelectric absorption events are generally the end of the chain
+            gamma_chain += 1
+            gamma_chain_regions.append(regions[index])
+
+            gamma_events.append(
+                InteractionEvent(
+                    crash_xs[index], crash_ys[index], crash_zs[index], \
                     source_xs[index], source_ys[index], source_zs[index], \
                     energies_out[index], energies_in[index], particles_age[index], \
                     particles_generation[index], targetAs[index], targetZs[index], \
-                    icode, fnpg_flags[index], ncases[index]
-                    ]
-        else:
-            assert 1==0, f"Non gamma/electron found in a Compton scatter: {particles_out[index]}" + \
-                f" found in NCASE {ncases[index]}"
+                    icode, fnpg_flags[index], ncases[index])
+                    )
             
-    #   221 events will alwyas have a single list entry
-    elif icode == 221:
-        # Photoelectric absorption events are generally the end
-        gamma_chain += 1
+            if gamma_chain == 3:
+                # If a triple gamma chain is found, append the NCASE and the FN/PG flag
+                # Chains with values 3+ (4, 5, 6, ...) are not appended to avoid double counting
+                triple_gamma_chains.append((ncases[index], fnpg_flags[index], gamma_chain_regions))
 
-        gamma_events["Event" + str(len(gamma_events) + 1)] = \
-            [crash_xs[index], crash_ys[index], crash_zs[index], \
-                source_xs[index], source_ys[index], source_zs[index], \
-                energies_out[index], energies_in[index], particles_age[index], \
-                particles_generation[index], targetAs[index], targetZs[index], \
-                icode, fnpg_flags[index], ncases[index]
-                ]
+        elif icode == 100 and particles_in[index] == 8 and \
+                targetAs[index] == 1 and targetZs[index] == 1:
+            # Elastic 100 -interactions with (n, p) has two entries. The proton one is skipped
+            if particles_out[index] == 1:
+                # Skipping proton entry
+                continue
 
-    elif icode == 100 and particles_in[index] == 8 and \
-            targetAs[index] == 1 and targetZs[index] == 1:
-        # Elastic 100 -interactions with (n, p) has two entries. The proton one is skipped
-        if particles_out[index] == 1:
-            # Skipping proton entry
-            continue
+            elif particles_out[index] == 8:
 
-        elif particles_out[index] == 8:
-            if neutron_chain == 0:
-                neutron_chain += 1
-
-            elif neutron_chain > 0:
-                if previous_neutron_energy != energies_in[index]:
+                if neutron_chain > 0 and previous_neutron_energy != energies_in[index]:
                     # The neutron chain is irregular and might need supervision
                     # Chain is reset
-                    neutron_chain = 1
-                    print(f"Irregular neutron chain detected at {ncases[index]}")
+                    neutron_chain = 0
+                    neutron_chain_regions = []
+                    irregular_neutrons.append(ncases[index])
+                
+                # Updating neutron chain
+                neutron_chain += 1
 
-                elif previous_neutron_energy == energies_in[index]:
-                    neutron_chain += 1
+                # Updating previous neutron energy values
+                previous_neutron_energy = energies_out[index]
 
-            # Updating previous neutron energy values
-            previous_neutron_energy = energies_out[index]
+                # Updating what scintillator the neutron interacted in
+                neutron_chain_regions.append(regions[index])
 
-            # Adding the current event to the neutron event dictionary
-            neutron_events["Event" + str(len(gamma_events) + 1)] = \
-                [crash_xs[index], crash_ys[index], crash_zs[index], \
-                source_xs[index], source_ys[index], source_zs[index], \
-                energies_out[index], energies_in[index], particles_age[index], \
-                particles_generation[index], targetAs[index], targetZs[index], \
-                icode, fnpg_flags[index], ncases[index]
-                ]
+                # Adding the current event to the neutron event dictionary
+                neutron_events.append(
+                    InteractionEvent(
+                        crash_xs[index], crash_ys[index], crash_zs[index], \
+                        source_xs[index], source_ys[index], source_zs[index], \
+                        energies_out[index], energies_in[index], particles_age[index], \
+                        particles_generation[index], targetAs[index], targetZs[index], \
+                        icode, fnpg_flags[index], ncases[index])
+                        )
+                if neutron_chain == 2:
+                    # If a double (n, p) chain is found, append the NCASE and the FN/PG flag
+                    # Chains with values 2+ (3, 4, 5, ...) are not appended to avoid double counting
+                    double_neutron_chains.append((ncases[index], fnpg_flags[index -2] + fnpg_flags[index], neutron_chain_regions))
 
+            else:
+                assert 1==0, f"Non neutron/proton found in a (n,p)-scatter: {particles_out[index]}" + \
+                f" found in NCASE {ncases[index]}"
+
+        # If an elastic (n, p) interaction occurs with ICODE 300, then the proton is listed before the neutron.
+        # This rather long statement 
+        elif targetAs[index] == 1 and targetZs[index] == 1 and\
+                particles_in[index] == 8 and icode == 300:
+            
+            # If the interaction secondary is a proton, then the next in the (n, p)-interaction should be a neutron
+            if particles_out[index] == 1:
+                continue
+
+            # If we have a neutron now and had a proton previously, then we have a legit (n, p)-interaction
+            if particles_out[index] == 8 and particles_out[index - 1] == 1:
+
+                if neutron_chain > 0:
+                    if previous_neutron_energy != energies_in[index]:
+                        # Irregular neutron chain found
+                        # Neutron chain is reset
+                        neutron_chain = 0
+                        neutron_chain_regions = []
+                        irregular_neutrons.append(ncases)
+
+                # Updating neutron chain
+                neutron_chain += 1
+
+                # Updating previous neutron energy value
+                previous_neutron_energy = energies_out[index]
+
+                # Updating in what region/scintillator the neutron interacted in
+                neutron_chain_regions.append(regions[index])
+
+                # Adding the current event to the neutron event dictionary
+                neutron_events.append(
+                    InteractionEvent(
+                        crash_xs[index], crash_ys[index], crash_zs[index], \
+                        source_xs[index], source_ys[index], source_zs[index], \
+                        energies_out[index], energies_in[index], particles_age[index], \
+                        particles_generation[index], targetAs[index], targetZs[index], \
+                        icode, fnpg_flags[index], ncases[index])
+                        )
+                
+                if neutron_chain == 2:
+                    # If a double (n, p) chain is found, append the NCASE and the FN/PG flag
+                    # Chains with values 2+ (3, 4, 5, ...) are not appended to avoid double counting
+                    double_neutron_chains.append((ncases[index], fnpg_flags[index -2] + fnpg_flags[index], neutron_chain_regions))
+            
+        # If the ICODE is not (219), (225), (ICODE 100 with target A, Z = 1, 1) or (ICODE 300 with A, Z = 1, 1, secondaries=1, 8, incoming=8), then the chain is reset
         else:
-            assert 1==0, f"Non neutron/proton found in a (n,p)-scatter: {particles_out[index]}" + \
-            f" found in NCASE {ncases[index]}"
-    # If the ICODE is not 219, 225 or ICODE 100 with target A, Z = 1, 1, then the chain is reset
-    else:
-        gamma_chain = 0
-        neutron_chain = 0
+            gamma_chain = 0
+            neutron_chain = 0
 
-print(f"Gamma events: {len(gamma_events)}")
-print(f"Neutron events: {len(neutron_events)}")
+            gamma_chain_regions = []
+            neutron_chain_regions = []
+    
+    if len(irregular_gammas) > 0:
+        print(f"Irregular gamma chains found: {len(irregular_gammas)}")
+    if len(irregular_neutrons) > 0:
+        print(f"Irregular neutron chains found: {len(irregular_neutrons)}")
+
+    print(f"Event buidling complete, time used: {round(time.time() - time_stamp, 2)} s")
+
+    if print_results:
+        # RESULTS
+        print("\n----------RESULTS----------")
+        print(f"Gamma events: {len(gamma_events)}")
+        print(f"Consecutive triple gamma events: {len(triple_gamma_chains)}")
+        print(f"Consecutive triple gamma events in three different scintillators: " + 
+            f"{len([i[0] for i in triple_gamma_chains if 
+                    i[2][0] != i[2][1] and i[2][0] != i[2][2] and i[2][1] != i[2][2]])}"
+                    )
+        print(f"True consecutive triple gamma events: {len([i[0] for i in triple_gamma_chains if i[1] == 1])}")
+        print(f"True consecutive triple gamma events in three different scintillators: " + 
+            f"{len([i[0] for i in triple_gamma_chains if i[1] == 1 and \
+                    i[2][0] != i[2][1] and i[2][0] != i[2][2] and i[2][1] != i[2][2]])}"
+                )
+
+
+        print(f"\nNeutron events: {len(neutron_events)}")
+        print(f"Consecutive double neutron events: {len(double_neutron_chains)}")
+        print(f"Consecutive double neutron events in two different scintillators: " + 
+            f"{len([i[0] for i in double_neutron_chains if i[2][0] != i[2][1]])}"
+                )
+            
+        print(f"True consecutive double neutron events: {len([i[0] for i in double_neutron_chains if i[1] == 2])}")
+        print(f"True consecutive double neutron events in two different scintillators: " +
+            f"{len([i[0] for i in double_neutron_chains if i[1] == 2 and \
+                    i[2][0] != i[2][1]])}"
+            )
+    
+    return gamma_events, neutron_events, triple_gamma_chains, double_neutron_chains
+
+def mgdraw_to_csv_builder(file_adress, primaries_per_spawn=primaries_per_spawn, result=False) -> None:
+    '''
+    Function that uses the functions event_buider and collect_txt_data to
+    create .csv-files with a list mode of all the relevant gamma and neutron
+    interactions in the detector. 
+
+    NB: The csv-files should include in what region the event happened in,
+    as the coincidence interactions should happen in different regions(scintillators)
+    '''
+    csv_gamma_file = file_adress[:4] + "_gammas.csv"
+    csv_neutron_file = file_adress[:4] + "_neutrons.csv"
+
+    gamma_events, neutron_events, a, b = \
+        event_builder(*collect_txt_data(file_adress, primaries_per_spawn=primaries_per_spawn), print_results=result)
+
+    # Writing gamma file
+    with open(csv_gamma_file, "w", newline="") as burner_file:
+        csv_file_writer = csv.writer(burner_file)
+        csv_file_writer.writerow([
+            "x", "y", "z", "sourceX", "sourceY", "sourceZ", "PDG", 
+            "edepMeV", "trackLocalTime", "trackID", "parentID", "eventID", 
+            "targetA", "targetZ", "processName"
+        ])
+        for Event in gamma_events:
+            csv_file_writer.writerow([
+                Event.crash_x, Event.crash_y, Event.crash_z, 
+                Event.source_x, Event.source_y, Event.source_z,
+                22, float(Event.energy_in - Event.energy_out), 
+                float(Event.particle_age * 1e3), 
+                Event.particle_generation - 1, Event.particle_generation - 2, 
+                Event.ncase, Event.targetA, Event.targetZ, "compt"
+            ])
+    burner_file.close()
+
+    # Writing neutron file
+    with open(csv_neutron_file, "w", newline="") as burner_file:
+        csv_file_writer = csv.writer(burner_file)
+        csv_file_writer.writerow([
+            "x", "y", "z", "sourceX", "sourceY", "sourceZ", "PDG", 
+            "edepMeV", "trackLocalTime", "trackID", "parentID", "eventID", 
+            "targetA", "targetZ", "processName"
+        ])
+        for Event in neutron_events:
+            csv_file_writer.writerow([
+                Event.crash_x, Event.crash_y, Event.crash_z, 
+                Event.source_x, Event.source_y, Event.source_z,
+                2112, float(Event.energy_in - Event.energy_out), 
+                float(Event.particle_age * 1e3), 
+                Event.particle_generation - 1, Event.particle_generation - 2, 
+                Event.ncase, Event.targetA, Event.targetZ, "hadElastic"
+            ])
+    burner_file.close()
+
+    print(".csv files created.")
+
+    return None
+
+#mgdraw_to_csv_builder(file_adress, primaries_per_spawn)
+event_builder(*collect_txt_data(file_adress, primaries_per_spawn=primaries_per_spawn), print_results=True)
+
 '''
 # Finding out how frequent each interaction is
 
