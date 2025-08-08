@@ -12,8 +12,12 @@ mgdraw_v05_output_reader.py:
   Also works well with merged .txt-files of the same format created by mgdraw_output_merger_v2.py
 
 mgdraw_output_merger_v2.py:
-  Merged .txt FLUKA output-files with from individual spawns into one MERGED.txt-file for easier handling
+  Merged .txt FLUKA output-files with from individual spawns into one MERGED.txt-file for easier handling of one file instead of many
+  This script will work for pretty much all kinds of FLUKA .txt files where output is given in list form 
 
+mgdraw_txt_to_csv.py
+  Script that transforms a FLUKA .txt-output file into a .csv-file.
+  This was created to work with (and is currently only compatible to) prompt_gamma_300425_gammas_detected_merged.txt
 
 ----------PLOTTING SCRIPTS----------
 mgdraw_bxdraw_plotter.py:
@@ -21,18 +25,18 @@ mgdraw_bxdraw_plotter.py:
   Requires the usage of bxdraw_txt_file_reader.py and mgdraw_output_merger_v2.py
   Can be used together with sample file NOVO_detector_ab001_scintillator_regions.txt
 
-mgdraw_particle_detection_plotter.py
+mgdraw_particle_detection_plotter.py:
   Incomplete script for postprocessing and plotting detection of gammas by Compton scattering
   Can be used together with sample file prompt_gamma_300425_gammas_detected_merged.txt
 
-mgdraw_particle_production_plotter.py
+mgdraw_particle_production_plotter.py:
   Script to visualize production of FNs, PGs, neutrons and photons (Pinnsvinplott)
   Not currently actively used
   Can be used together with sample file prompt_gamma_2e6x5_'z001_FN_produced.txt
 
-mgdraw_txt_to_csv.py
-  Script that transforms a FLUKA .txt-output file into a .csv-file.
-  This was created to work with (and is currently only compatible to) prompt_gamma_300425_gammas_detected_merged.txt
+mgdraw_v05_detection_event_builder.py:
+  Script using output from mgdraw_v05_detection.f to filter and find wanted FN/PG interactions in the detector. 
+  Work in progress as of 08.08.25
   
 ----------SAMPLE FILES----------
 NOVO_detector_ab001_scintillator_regions.txt:
