@@ -22,5 +22,8 @@ mgdraw_v03_detection.f
     If a FN/PG interacts in the target after production, or if it enters any electronic box, it is flagged as a non-FN/PG
 
 mgdraw_v05_detection.f
-  Fortran scipt for FLUKA with the mgdraw subroutine that is currently being worked on for detection of FN/PG (as of 05.08.25)
-  A description of the script is pending...
+  Fortran scipt for FLUKA with the mgdraw subroutine that will record all interactions that happenes within the NOVCoDA detector scintillators.
+  Prompt gammas and fast neutrons that are produced in the target (MREG 49), and in addition travel directly to the scintillators and interact will be flagged LLOUSE=1
+  Outputs:
+    - UNIT=80: ****_scintillator_interactions.txt: All interactions in the scintillators (defined as MREG regions 1-48) are recorded
+  
