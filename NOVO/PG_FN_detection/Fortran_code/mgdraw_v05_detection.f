@@ -329,23 +329,15 @@
 *
 *          If the current secondary is a photon (7)
            IF(KPART(IP) .EQ. 7) THEN
-*                 
-*           If the current secondary's kinetic energy is greater than 10 keV
-            IF(Tki(IP) .GE. 1E-5) THEN
 *           
 *            Kinetic energy of the secondary
              SPAUSR(1) = Tki(IP)
 
 *            Flag particle to be a true FN/PG
              LLOUSE = 1
-
-            END IF
 *
 *          If the current secondary is a neutron (8)
            ELSE IF(KPART(IP) .EQ. 8) THEN
-*
-*           If the secondary's kinetic energy is greater than 100 keV
-            IF(Tki(IP) .GE. 1E-4) THEN 
 *
 *            Kinetic energy of the secondary
              SPAUSR(1) = Tki(IP)
@@ -353,7 +345,6 @@
 *            Flag particle to be a true FN/PG
              LLOUSE = 1
 *
-            END IF
            END IF
           END DO
          END IF
@@ -392,7 +383,7 @@
          IF(KPART(IP) .LE. -300000) THEN
 
 *         Write output file: 'FN_PG_detected.txt'
-          WRITE(80,'(1I7,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
+          WRITE(80,'(1I8,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
      &     NCASE, ICODE, JTRACK, -2, LLOUSE, 
      &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
      &     XSCO, YSCO, ZSCO, 
@@ -402,7 +393,7 @@
          ELSE
 
 *         Write output file: 'FN_PG_detected.txt' 
-          WRITE(80,'(1I7,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
+          WRITE(80,'(1I8,1X,6I3,1X,2F11.6,1X,3F10.5,1X,2I5,1X,4F11.6)')
      &     NCASE, ICODE, JTRACK, KPART(IP), LLOUSE,
      &     ICHTAR, IBTAR, Tki(IP), ETRACK-AM(JTRACK),
      &     XSCO, YSCO, ZSCO, 
