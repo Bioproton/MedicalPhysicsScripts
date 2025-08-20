@@ -75,9 +75,12 @@ def create_array(filepath,dicom_path,particle_type):
 
                 elements = elements.astype(float)
                 if particle_type == "pg":
-                    coordinates.append(elements[9:12])
+                    # for "old" mgdraw results
+                    #coordinates.append(elements[9:12]) 
+                    coordinates.append(elements[1:4])
                 if particle_type == "fn":
-                    coordinates.append(elements[4:7])
+                    #coordinates.append(elements[4:7])
+                    coordinates.append(elements[1:4])
             except:
                 errors+=1
                 continue
