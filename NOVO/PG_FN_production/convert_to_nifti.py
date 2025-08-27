@@ -47,7 +47,7 @@ def convert_to_CT_coordinates(dicom_positions,dicom_path):
 
 def create_array(filepath,dicom_path,particle_type):
     dicom_positions = get_voxelcage(dicom_path)
-    CT_positions,_,_,shape_x,shape_y,shape_z = convert_to_CT_coordinates(dicom_positions,dicom_path)
+    CT_positions,_,_,_,shape_x,shape_y,shape_z = convert_to_CT_coordinates(dicom_positions,dicom_path)
 
   
     files = os.listdir(filepath)
@@ -126,7 +126,7 @@ save_as_nifti(hist_image,output_file,nifti_image)
 
 ##########################################################################################
 '''Code for exporting DICOM image series to nifti file'''
-input_folder = "C:/Users/amibe/OneDrive/Documentos/NOVO/Data/CT_images_from_DP/Lunge/DICOMS/"
-output_file = "c:/Users/amibe/OneDrive/Documentos/NOVO/Data/CT_images_from_DP/nifti_volume.nii.gz"
-dicom2nifti.convert_directory(input_folder, os.path.dirname(output_file))
+#input_folder = "C:/Users/amibe/OneDrive/Documentos/NOVO/Data/CT_images_from_DP/Lunge/DICOMS/"
+#output_file = "c:/Users/amibe/OneDrive/Documentos/NOVO/Data/CT_images_from_DP/nifti_volume.nii.gz"
+#dicom2nifti.convert_directory(input_folder, os.path.dirname(output_file))
 
