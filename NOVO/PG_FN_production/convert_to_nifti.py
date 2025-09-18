@@ -106,8 +106,8 @@ def save_as_nifti(hist,output_file,nifti_image):
     ref_shape = ref_img.shape 
 
     your_volume = hist.astype(np.float32)
-    flipped_volume = np.flip(your_volume, axis=1)
-    new_img = nib.Nifti1Image(flipped_volume, ref_affine)
+    #flipped_volume = np.flip(your_volume, axis=1) #BUG: Flipping unecessary
+    new_img = nib.Nifti1Image(your_volume, ref_affine)
 
     # 4. Save to file
     nib.save(new_img,output_file)
