@@ -117,6 +117,7 @@ def save_as_nifti(hist,output_file,nifti_image):
     nib.save(new_img,output_file)
 
 
+# dose image is in dicom format, pg/fn image is in nifti-format
 def match_dose_to_pg_fn_images(dose_image_path, pg_image_path, save = False,output_dose = "", output_pg = ""):
     # Load pg image
     pg_image = nib.load(pg_image_path)
@@ -126,14 +127,15 @@ def match_dose_to_pg_fn_images(dose_image_path, pg_image_path, save = False,outp
     pg_min_y = pg_image.header["qoffset_y"]
 
     # Load dose image
-    dose_image = nib.load(dose_image_path)
+    dose_image = pydicom.dcmread(dose_image_path)#nib.load(dose_image_path)
     # Find origin
-    dose_min_x = dose_image.header["qoffset_x"]
-    dose_min_y = dose_image.header["qoffset_y"]
+    dose_min_x = - dose_image.ImagePositionPatient[0]
+    dose_min_y = - dose_image.ImagePositionPatient[1]
 
     # Load pixel arrays
-    pg_array = pg_image.get_fdata()
-    dose_array = dose_image.get_fdata()
+    pg_array = pg_image.get_fdata() # nifti format
+    dose_array = dose_image.pixel_array # dicom format. Loads (91,216,318)
+    dose_array = np.transpose(dose_array, (2, 1, 0)) # Reshaped to (318, 216, 91)
 
     pg_shape = pg_array.shape
     dose_shape = dose_array.shape
@@ -147,16 +149,21 @@ def match_dose_to_pg_fn_images(dose_image_path, pg_image_path, save = False,outp
     aligned_dose =aligned_dose[:pg_shape[0],:,2:] #aligned_image_b[:310,:,2:] # start i z = 39 
     aligned_pg = pg_array[:,:dose_shape[1],:aligned_dose.shape[2]]
 
-    # If save == True: save as nifti image. Generic affine matrix used here (np.eye). Adjust if necessary
+    # If save == True: save as nifti image. 
     # output_dose = r"D:\Study2_dosereconstruction\testing\aligned_dose.nii.gz"
     # output_pg = r"r"D:\Study2_dosereconstruction\testing\aligned_pg.nii.gz")"
     if save:
-        nifti_dose_aligned = nib.Nifti1Image(aligned_dose,np.eye(4))
-        nifti_pg_aligned = nib.Nifti1Image(aligned_pg,np.eye(4))
+        ref_affine = pg_image.affine
+        nifti_dose_aligned = nib.Nifti1Image(aligned_dose,ref_affine)
+        nifti_pg_aligned = nib.Nifti1Image(aligned_pg,ref_affine)
         nib.save(nifti_dose_aligned,output_dose)
         nib.save(nifti_pg_aligned,output_pg)
 
     return aligned_dose, aligned_pg
+
+
+
+
 
 
 
