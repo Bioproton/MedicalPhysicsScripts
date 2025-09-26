@@ -10,6 +10,7 @@ import os
 import dicom2nifti
 import modules as modules
 from scipy.ndimage import shift
+import pydicom
 
 # Get coordinates of the FLUKA voxelcage
 def get_voxelcage(dicom_path):
