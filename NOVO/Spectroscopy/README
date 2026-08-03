@@ -1,1 +1,5 @@
+This project is divided into the following subfolders: 
 
+1) FLUKA: scripts used for running the FLUKA simulations, such as fluscw, source, mgdraw.  
+2) Data: scripts for processing the simulation data and making the 1D energy spectras. 
+3) AI: scripts for building and training the CNN. 
