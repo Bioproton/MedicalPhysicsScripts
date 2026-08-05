@@ -12,6 +12,7 @@ import csv
 import math
 import pandas as pd
 import sys
+from mgdraw_txt_file_reader_vAMB import collect_txt_data
 from time_converter_NOVO import convert_time
 import matplotlib.pyplot as plt
 
@@ -35,7 +36,7 @@ class DetectionDataStorage:
             "ncase", "icode", "particle_in", "particle_out", "fnpg_flag",
             "targetZ", "targetA", "energy_out", "energy_in",
             "crash_x", "crash_y", "crash_z", "region", "particle_generation",
-            "particle_age", "source_x", "source_y", "source_z", "prod_energy"
+            "particle_age", "source_x", "source_y", "source_z", "mreg_prod"
             ])
         self.detector = detector
         
@@ -54,12 +55,7 @@ class DetectionDataStorage:
         self.double_gamma_events = []
         self.triple_gamma_events = []       # Default
 
-    def load_data(self, mgdraw_version_8_plus=True) -> None:
-
-        if mgdraw_version_8_plus is False:
-            from mgdraw_v05_output_reader import collect_txt_data  # Used for mgdraw data from mgdraw.f versions v07 or lower
-        else:
-            from mgdraw_txt_file_reader_06 import collect_txt_data    # Used for mgdraw data from mgdraw.f versions v08 or higher
+    def load_data(self) -> None:    
             
         folder = os.listdir(self.folder_path)
         n_files = len(os.listdir(self.folder_path))
