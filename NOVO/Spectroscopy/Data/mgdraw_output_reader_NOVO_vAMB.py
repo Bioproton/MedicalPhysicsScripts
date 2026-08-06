@@ -261,16 +261,16 @@ class DetectionDataStorage:
             raw_ncase_hit_history = np.array(raw_ncase_hit_history)
             raw_all_hit_histories.append(raw_ncase_hit_history)
             
-        print(f"Raw hit filtering complete. Time used: {round(time.time() - time_stamp, 2)} s")
-        print(f"Total number of lines: {len(self.data)}")
+        #print(f"Raw hit filtering complete. Time used: {round(time.time() - time_stamp, 2)} s")
+        #print(f"Total number of lines: {len(self.data)}")
         lines_kept = sum([len(i) for i in raw_all_hit_histories])
         lines_rejected = len(self.data) - lines_kept
-        print(f"Number of lines kept: {sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_kept / len(self.data), 1)}%)")
-        print(f"Number of lines rejected: {len(self.data) - sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_rejected / len(self.data), 1)}%)")
+        #print(f"Number of lines kept: {sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_kept / len(self.data), 1)}%)")
+        #print(f"Number of lines rejected: {len(self.data) - sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_rejected / len(self.data), 1)}%)")
 
 
         #-----------HIT MERGING-----------
-        print(f"\n-----------HIT MERGING-----------")
+        #print(f"\n-----------HIT MERGING-----------")
         time_stamp = time.time()
 
         # Step 1: Merge hits within the same bar within 400 ns (0.4 µs) [from the same NCASE]
@@ -314,8 +314,8 @@ class DetectionDataStorage:
                 
         time_merged_all_hit_histories = np.array(time_merged_all_hit_histories, dtype=object)
 
-        print(f"Merging complete. Time used: {round(time.time() - time_stamp, 2)} s")
-        print(f"Overlaps found: {overlap_num}")
+        #print(f"Merging complete. Time used: {round(time.time() - time_stamp, 2)} s")
+        #print(f"Overlaps found: {overlap_num}")
 
         # Saving values and removing self.data from memory
         self.data = None
@@ -365,10 +365,10 @@ class DetectionDataStorage:
         # All hits are the combination of the rest (allows differential energy cutting)
         self.all_hits = np.concatenate((self.gamma_hits, self.neutron_hits, self.combo_hits))
         
-        print(f"Total number of hit histories > 10/200 keV: {len(self.all_hits)}")
-        print(f"Number of gamma hit histories > 10 keV: {len(self.gamma_hits)}")
-        print(f"Number of neutron hit histories > 200 keV: {len(self.neutron_hits)}")
-        print(f"Number of combo hit histories > 200 keV: {len(self.combo_hits)}")
+        #print(f"Total number of hit histories > 10/200 keV: {len(self.all_hits)}")
+        #print(f"Number of gamma hit histories > 10 keV: {len(self.gamma_hits)}")
+        #print(f"Number of neutron hit histories > 200 keV: {len(self.neutron_hits)}")
+        #print(f"Number of combo hit histories > 200 keV: {len(self.combo_hits)}")
 
         if write_hits_to_file == True:
 

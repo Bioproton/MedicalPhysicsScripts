@@ -9,7 +9,7 @@ Goal: to assign a compositional ground truth to each mreg where a gamma/neutron 
 import numpy as np
 from helper_functions import find_HU_group_info
 
-def find_voxel_GT_composition(output_file_path, regions, voxel_start_line, voxel_end_line, HU_start_line, HU_end_line):
+def find_voxel_GT_composition(output_file_path, regions_all, voxel_start_line, voxel_end_line, HU_start_line, HU_end_line):
     f = open(output_file_path, "r")
     lines = f.readlines()
 
@@ -31,6 +31,10 @@ def find_voxel_GT_composition(output_file_path, regions, voxel_start_line, voxel
     phosphor_contents = []
     densities = []
     rests = []
+
+    regions = np.unique(regions_all)
+    print("length of regions:", len(regions))
+    print("length of regions (all):", len(regions_all))
 
     for region in regions:
         HU_group_element = HU_group[int(region)-1]
