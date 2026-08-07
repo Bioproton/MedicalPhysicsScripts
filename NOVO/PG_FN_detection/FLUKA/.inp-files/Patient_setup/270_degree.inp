@@ -1,0 +1,717 @@
+* Patient name: Hv_14
+* Plan name: 2fields_90grad_1
+* Treatment field: 270_degree
+* Number of fractions: 30
+* Isocenter position in DICOM coordinate system [x,y,z] [mm]: [-3.998, -220.345, 225.487]
+* Maximum beam energy: 127.7 MeV
+* Minimum beam energy: 70.0 MeV
+* Gantry angle: 270.0 deg
+* Patient support angle (table rotation): 0.0 deg
+* Table top roll angle: 0.0 deg
+* Table top pitch angle: 0.0 deg
+* Treatment Machine: ProB360_Columbus
+* Number of spots for this treatment field: 1306
+* The following numbers are for all fractions and are only valid for CAP_GENERAL at HUS:
+* Total number of primaries for this field: 7.43787228567e+11
+* Total number of primaries for all fields combined: 1.70167811886e+12
+* Scoring bins [x,y,z]: [318, 216, 91]
+* Scoring bin size [x,y,z] [mm]: [1.0, 1.0, 3.0]
+TITLE                                                                 OLDFLAIR
+TPS recalculation
+* Needed due to the high number of regions
+* in the dicom image. Can be further increased.
+GLOBAL         5000.                                                  OLDFLAIR
+* Set the defaults for precision simulations
+DEFAULTS                                                              PRECISIO
+* Define the beam characteristics.
+* Maximum energy and particle type.
+* Maximum energy: 127.7 MeV
+* Minimum energy: 70.0 MeV
+BEAM       -0.127700                                                  PROTON
+* Needed for source routine.
+* User must compile source file.
+SOURCE
+* Physics cards that allows Coalescense and Evaporation (for PGs)
+PHYSICS          3.0                                                  EVAPORAT
+PHYSICS          1.0                                                  COALESCE
+* NOVCoDA rotation cards. Adjust azimuthal angles for rotations
+ROT-DEFI        300.       0.0      90.0       -7.       -7.     -10.5NOVO_rot
+ROT-DEFI        100.       0.0      90.0       0.0       0.0       0.0NOVO_rot
+ROT-DEFI        300.       0.0      180.       0.0       0.0       0.0NOVO_rot
+!ruler    2.84574955-8.1008624.030614102       0.0       1.0       0.0ruler
+!ruler    3.00185963-23.097744.0043431062.84574955-8.1008624.030614102 &
+GEOBEGIN                                                              COMBNAME
+VOXELS    -15.100217 -11.26554 -18.19874                              ../vox
+    0    0          
+* Black body
+SPH blkbody    0.0 0.0 0.0 100000.0
+* Void sphere
+SPH void       0.0 0.0 0.0 10000.0
+* Water dummy - needed for dose to water
+SPH wdum       100050.0 0.0 0.0 10.0
+* NOVCoDA geometrical shapes
+$start_transform NOVO_rot
+$start_translat 0.0 0.0 33.6
+* Intersection planes
+YZP odd_pos    14.0
+YZP odd_neg    0.0
+XZP even_pos   14.0
+XZP even_neg   0.0
+YZP odd_Hpos   14.2
+YZP odd_Hneg   -0.2
+XZP evn_Hpos   14.2
+XZP evn_Hneg   -0.2
+* Voidboxes for void definition
+RPP voidbox1   0.0 14.0 0.0 14.0 0.0 21.0
+RPP voidbox2   -12.0 0.0 0.0 14.05 -0.3 22.2
+RPP voidbox3   14.0 26.0 0.0 14.05 -0.3 22.2
+RPP voidbox4   0.0 14.05 -12.0 0.0 -0.3 22.2
+RPP voidbox5   0.0 14.05 14.0 26.0 -0.3 22.2
+* Scintillator geometries
+RPP bar1_1     0.0 14.0 1.15 2.35 0.0 1.2
+RPP bar1_2     0.0 14.0 4.65 5.85 0.0 1.2
+RPP bar1_3     0.0 14.0 8.15 9.35 0.0 1.2
+RPP bar1_4     0.0 14.0 11.65 12.85 0.0 1.2
+RPP bar2_1     1.15 2.35 0.0 14.0 1.8 3.0
+RPP bar2_2     4.65 5.85 0.0 14.0 1.8 3.0
+RPP bar2_3     8.15 9.35 0.0 14.0 1.8 3.0
+RPP bar2_4     11.65 12.85 0.0 14.0 1.8 3.0
+RPP bar3_1     0.0 14.0 1.15 2.35 3.6 4.8
+RPP bar3_2     0.0 14.0 4.65 5.85 3.6 4.8
+RPP bar3_3     0.0 14.0 8.15 9.35 3.6 4.8
+RPP bar3_4     0.0 14.0 11.65 12.85 3.6 4.8
+RPP bar4_1     1.15 2.35 0.0 14.0 5.4 6.6
+RPP bar4_2     4.65 5.85 0.0 14.0 5.4 6.6
+RPP bar4_3     8.15 9.35 0.0 14.0 5.4 6.6
+RPP bar4_4     11.65 12.85 0.0 14.0 5.4 6.6
+RPP bar5_1     0.0 14.0 1.15 2.35 7.2 8.4
+RPP bar5_2     0.0 14.0 4.65 5.85 7.2 8.4
+RPP bar5_3     0.0 14.0 8.15 9.35 7.2 8.4
+RPP bar5_4     0.0 14.0 11.65 12.85 7.2 8.4
+RPP bar6_1     1.15 2.35 0.0 14.0 9.0 10.2
+RPP bar6_2     4.65 5.85 0.0 14.0 9.0 10.2
+RPP bar6_3     8.15 9.35 0.0 14.0 9.0 10.2
+RPP bar6_4     11.65 12.85 0.0 14.0 9.0 10.2
+RPP bar7_1     0.0 14.0 1.15 2.35 10.8 12.0
+RPP bar7_2     0.0 14.0 4.65 5.85 10.8 12.0
+RPP bar7_3     0.0 14.0 8.15 9.35 10.8 12.0
+RPP bar7_4     0.0 14.0 11.65 12.85 10.8 12.0
+RPP bar8_1     1.15 2.35 0.0 14.0 12.6 13.8
+RPP bar8_2     4.65 5.85 0.0 14.0 12.6 13.8
+RPP bar8_3     8.15 9.35 0.0 14.0 12.6 13.8
+RPP bar8_4     11.65 12.85 0.0 14.0 12.6 13.8
+RPP bar9_1     0.0 14.0 1.15 2.35 14.4 15.6
+RPP bar9_2     0.0 14.0 4.65 5.85 14.4 15.6
+RPP bar9_3     0.0 14.0 8.15 9.35 14.4 15.6
+RPP bar9_4     0.0 14.0 11.65 12.85 14.4 15.6
+RPP bar10_1    1.15 2.35 0.0 14.0 16.2 17.4
+RPP bar10_2    4.65 5.85 0.0 14.0 16.2 17.4
+RPP bar10_3    8.15 9.35 0.0 14.0 16.2 17.4
+RPP bar10_4    11.65 12.85 0.0 14.0 16.2 17.4
+RPP bar11_1    0.0 14.0 1.15 2.35 18.0 19.2
+RPP bar11_2    0.0 14.0 4.65 5.85 18.0 19.2
+RPP bar11_3    0.0 14.0 8.15 9.35 18.0 19.2
+RPP bar11_4    0.0 14.0 11.65 12.85 18.0 19.2
+RPP bar12_1    1.15 2.35 0.0 14.0 19.8 21.0
+RPP bar12_2    4.65 5.85 0.0 14.0 19.8 21.0
+RPP bar12_3    8.15 9.35 0.0 14.0 19.8 21.0
+RPP bar12_4    11.65 12.85 0.0 14.0 19.8 21.0
+* Electric boxes on the sides
+RPP elec1_1    -12.0 26.0 0.85 3.55 -0.3 2.4
+RPP elec1_2    -12.0 26.0 4.35 7.05 -0.3 2.4
+RPP elec1_3    -12.0 26.0 7.85 10.55 -0.3 2.4
+RPP elec1_4    -12.0 26.0 11.35 14.05 -0.3 2.4
+RPP elec2_1    0.85 3.55 -12.0 26.0 1.5 4.2
+RPP elec2_2    4.35 7.05 -12.0 26.0 1.5 4.2
+RPP elec2_3    7.85 10.55 -12.0 26.0 1.5 4.2
+RPP elec2_4    11.35 14.05 -12.0 26.0 1.5 4.2
+RPP elec3_1    -12.0 26.0 0.85 3.55 3.3 6.0
+RPP elec3_2    -12.0 26.0 4.35 7.05 3.3 6.0
+RPP elec3_3    -12.0 26.0 7.85 10.55 3.3 6.0
+RPP elec3_4    -12.0 26.0 11.35 14.05 3.3 6.0
+RPP elec4_1    0.85 3.55 -12.0 26.0 5.1 7.8
+RPP elec4_2    4.35 7.05 -12.0 26.0 5.1 7.8
+RPP elec4_3    7.85 10.55 -12.0 26.0 5.1 7.8
+RPP elec4_4    11.35 14.05 -12.0 26.0 5.1 7.8
+RPP elec5_1    -12.0 26.0 0.85 3.55 6.9 9.6
+RPP elec5_2    -12.0 26.0 4.35 7.05 6.9 9.6
+RPP elec5_3    -12.0 26.0 7.85 10.55 6.9 9.6
+RPP elec5_4    -12.0 26.0 11.35 14.05 6.9 9.6
+RPP elec6_1    0.85 3.55 -12.0 26.0 8.7 11.4
+RPP elec6_2    4.35 7.05 -12.0 26.0 8.7 11.4
+RPP elec6_3    7.85 10.55 -12.0 26.0 8.7 11.4
+RPP elec6_4    11.35 14.05 -12.0 26.0 8.7 11.4
+RPP elec7_1    -12.0 26.0 0.85 3.55 10.5 13.2
+RPP elec7_2    -12.0 26.0 4.35 7.05 10.5 13.2
+RPP elec7_3    -12.0 26.0 7.85 10.55 10.5 13.2
+RPP elec7_4    -12.0 26.0 11.35 14.05 10.5 13.2
+RPP elec8_1    0.85 3.55 -12.0 26.0 12.3 15.0
+RPP elec8_2    4.35 7.05 -12.0 26.0 12.3 15.0
+RPP elec8_3    7.85 10.55 -12.0 26.0 12.3 15.0
+RPP elec8_4    11.35 14.05 -12.0 26.0 12.3 15.0
+RPP elec9_1    -12.0 26.0 0.85 3.55 14.1 16.8
+RPP elec9_2    -12.0 26.0 4.35 7.05 14.1 16.8
+RPP elec9_3    -12.0 26.0 7.85 10.55 14.1 16.8
+RPP elec9_4    -12.0 26.0 11.35 14.05 14.1 16.8
+RPP elec10_1   0.85 3.55 -12.0 26.0 15.9 18.6
+RPP elec10_2   4.35 7.05 -12.0 26.0 15.9 18.6
+RPP elec10_3   7.85 10.55 -12.0 26.0 15.9 18.6
+RPP elec10_4   11.35 14.05 -12.0 26.0 15.9 18.6
+RPP elec11_1   -12.0 26.0 0.85 3.55 17.7 20.4
+RPP elec11_2   -12.0 26.0 4.35 7.05 17.7 20.4
+RPP elec11_3   -12.0 26.0 7.85 10.55 17.7 20.4
+RPP elec11_4   -12.0 26.0 11.35 14.05 17.7 20.4
+RPP elec12_1   0.85 3.55 -12.0 26.0 19.5 22.2
+RPP elec12_2   4.35 7.05 -12.0 26.0 19.5 22.2
+RPP elec12_3   7.85 10.55 -12.0 26.0 19.5 22.2
+RPP elec12_4   11.35 14.05 -12.0 26.0 19.5 22.2
+* Hollowing of the electric boxes
+RPP hole1_1    -11.8 25.8 1.05 3.35 -0.1 2.2
+RPP hole1_2    -11.8 25.8 4.55 6.85 -0.1 2.2
+RPP hole1_3    -11.8 25.8 8.05 10.35 -0.1 2.2
+RPP hole1_4    -11.8 25.8 11.55 13.85 -0.1 2.2
+RPP hole2_1    1.05 3.35 -11.8 25.8 1.7 4.
+RPP hole2_2    4.55 6.85 -11.8 25.8 1.7 4.
+RPP hole2_3    8.05 10.35 -11.8 25.8 1.7 4.
+RPP hole2_4    11.5 13.85 -11.8 25.8 1.7 4.
+RPP hole3_1    -11.8 25.8 1.05 3.35 3.5 5.8
+RPP hole3_2    -11.8 25.8 4.55 6.85 3.5 5.8
+RPP hole3_3    -11.8 25.8 8.05 10.35 3.5 5.8
+RPP hole3_4    -11.8 25.8 11.55 13.85 3.5 5.8
+RPP hole4_1    1.05 3.35 -11.8 25.8 5.3 7.6
+RPP hole4_2    4.55 6.85 -11.8 25.8 5.3 7.6
+RPP hole4_3    8.05 10.35 -11.8 25.8 5.3 7.6
+RPP hole4_4    11.55 13.85 -11.8 25.8 5.3 7.6
+RPP hole5_1    -11.8 25.8 1.05 3.35 7.1 9.4
+RPP hole5_2    -11.8 25.8 4.55 6.85 7.1 9.4
+RPP hole5_3    -11.8 25.8 8.05 10.35 7.1 9.4
+RPP hole5_4    -11.8 25.8 11.55 13.85 7.1 9.4
+RPP hole6_1    1.05 3.35 -11.8 25.8 8.9 11.2
+RPP hole6_2    4.55 6.85 -11.8 25.8 8.9 11.2
+RPP hole6_3    8.05 10.35 -11.8 25.8 8.9 11.2
+RPP hole6_4    11.55 13.85 -11.8 25.8 8.9 11.2
+RPP hole7_1    -11.8 25.8 1.05 3.35 10.7 13.0
+RPP hole7_2    -11.8 25.8 4.55 6.85 10.7 13.0
+RPP hole7_3    -11.8 25.8 8.05 10.35 10.7 13.0
+RPP hole7_4    -11.8 25.8 11.55 13.85 10.7 13.0
+RPP hole8_1    1.05 3.35 -11.8 25.8 12.5 14.8
+RPP hole8_2    4.55 6.85 -11.8 25.8 12.5 14.8
+RPP hole8_3    8.05 10.35 -11.8 25.8 12.5 14.8
+RPP hole8_4    11.55 13.85 -11.8 25.8 12.5 14.8
+RPP hole9_1    -11.8 25.8 1.05 3.35 14.3 16.6
+RPP hole9_2    -11.8 25.8 4.55 6.85 14.3 16.6
+RPP hole9_3    -11.8 25.8 8.05 10.35 14.3 16.6
+RPP hole9_4    -11.8 25.8 11.55 13.85 14.3 16.6
+RPP hole10_1   1.05 3.35 -11.8 25.8 16.1 18.4
+RPP hole10_2   4.55 6.85 -11.8 25.8 16.1 18.4
+RPP hole10_3   8.05 10.35 -11.8 25.8 16.1 18.4
+RPP hole10_4   11.55 13.85 -11.8 25.8 16.1 18.4
+RPP hole11_1   -11.8 25.8 1.05 3.35 17.9 20.2
+RPP hole11_2   -11.8 25.8 4.55 6.85 17.9 20.2
+RPP hole11_3   -11.8 25.8 8.05 10.35 17.9 20.2
+RPP hole11_4   -11.8 25.8 11.55 13.85 17.9 20.2
+RPP hole12_1   1.05 3.35 -11.8 25.8 19.7 22.0
+RPP hole12_2   4.55 6.85 -11.8 25.8 19.7 22.0
+RPP hole12_3   8.05 10.35 -11.8 25.8 19.7 22.0
+RPP hole12_4   11.55 13.85 -11.8 25.8 19.7 22.0
+$end_translat 
+$end_transform 
+END
+* Scintillator regions: MREG = 1 - 48
+BAR1_1       5 +bar1_1 -odd_neg +odd_pos
+BAR1_2       5 +bar1_2-odd_neg +odd_pos
+BAR1_3       5 +bar1_3-odd_neg +odd_pos
+BAR1_4       5 +bar1_4-odd_neg +odd_pos
+BAR2_1       5 +bar2_1-even_neg +even_pos
+BAR2_2       5 +bar2_2-even_neg +even_pos
+BAR2_3       5 +bar2_3-even_neg +even_pos
+BAR2_4       5 +bar2_4-even_neg +even_pos
+BAR3_1       5 +bar3_1-odd_neg +odd_pos
+BAR3_2       5 +bar3_2-odd_neg +odd_pos
+BAR3_3       5 +bar3_3-odd_neg +odd_pos
+BAR3_4       5 +bar3_4-odd_neg +odd_pos
+BAR4_1       5 +bar4_1-even_neg +even_pos
+BAR4_2       5 +bar4_2-even_neg +even_pos
+BAR4_3       5 +bar4_3-even_neg +even_pos
+BAR4_4       5 +bar4_4-even_neg +even_pos
+BAR5_1       5 +bar5_1-odd_neg +odd_pos
+BAR5_2       5 +bar5_2-odd_neg +odd_pos
+BAR5_3       5 +bar5_3-odd_neg +odd_pos
+BAR5_4       5 +bar5_4-odd_neg +odd_pos
+BAR6_1       5 +bar6_1-even_neg +even_pos
+BAR6_2       5 +bar6_2-even_neg +even_pos
+BAR6_3       5 +bar6_3-even_neg +even_pos
+BAR6_4       5 +bar6_4-even_neg +even_pos
+BAR7_1       5 +bar7_1-odd_neg +odd_pos
+BAR7_2       5 +bar7_2-odd_neg +odd_pos
+BAR7_3       5 +bar7_3-odd_neg +odd_pos
+BAR7_4       5 +bar7_4-odd_neg +odd_pos
+BAR8_1       5 +bar8_1-even_neg +even_pos
+BAR8_2       5 +bar8_2-even_neg +even_pos
+BAR8_3       5 +bar8_3-even_neg +even_pos
+BAR8_4       5 +bar8_4-even_neg +even_pos
+BAR9_1       5 +bar9_1-odd_neg +odd_pos
+BAR9_2       5 +bar9_2-odd_neg +odd_pos
+BAR9_3       5 +bar9_3-odd_neg +odd_pos
+BAR9_4       5 +bar9_4-odd_neg +odd_pos
+BAR10_1      5 +bar10_1-even_neg +even_pos
+BAR10_2      5 +bar10_2-even_neg +even_pos
+BAR10_3      5 +bar10_3-even_neg +even_pos
+BAR10_4      5 +bar10_4-even_neg +even_pos
+BAR11_1      5 +bar11_1-odd_neg +odd_pos
+BAR11_2      5 +bar11_2-odd_neg +odd_pos
+BAR11_3      5 +bar11_3-odd_neg +odd_pos
+BAR11_4      5 +bar11_4-odd_neg +odd_pos
+BAR12_1      5 +bar12_1-even_neg +even_pos
+BAR12_2      5 +bar12_2-even_neg +even_pos
+BAR12_3      5 +bar12_3-even_neg +even_pos
+BAR12_4      5 +bar12_4-even_neg +even_pos
+* Black hole
+BLKBODY      5 +blkbody -void
+* Void around
+VOID         5 +void -VOXEL -voidbox1-voidbox2-voidbox3-voidbox4-voidbox5
+VOID21       5 +voidbox1
+               -bar1_1-bar1_2-bar1_3-bar1_4
+               -bar2_1-bar2_2-bar2_3-bar2_4
+               -bar3_1-bar3_2-bar3_3-bar3_4
+               -bar4_1-bar4_2-bar4_3-bar4_4
+               -bar5_1-bar5_2-bar5_3-bar5_4
+               -bar6_1-bar6_2-bar6_3-bar6_4
+               -bar7_1-bar7_2-bar7_3-bar7_4
+               -bar8_1-bar8_2-bar8_3-bar8_4
+               -bar9_1-bar9_2-bar9_3-bar9_4
+               -bar10_1-bar10_2-bar10_3-bar10_4
+               -bar11_1-bar11_2-bar11_3-bar11_4
+               -bar12_1-bar12_2-bar12_3-bar12_4
+VOID22       5 +voidbox2
+               -elec1_1-elec1_2-elec1_3-elec1_4
+               -elec3_1-elec3_2-elec3_3-elec3_4
+               -elec5_1-elec5_2-elec5_3-elec5_4
+               -elec7_1-elec7_2-elec7_3-elec7_4
+               -elec9_1-elec9_2-elec9_3-elec9_4
+               -elec11_1-elec11_2-elec11_3-elec11_4
+VOID23       5 +voidbox3
+               -elec1_1-elec1_2-elec1_3-elec1_4
+               -elec3_1-elec3_2-elec3_3-elec3_4
+               -elec5_1-elec5_2-elec5_3-elec5_4
+               -elec7_1-elec7_2-elec7_3-elec7_4
+               -elec9_1-elec9_2-elec9_3-elec9_4
+               -elec11_1-elec11_2-elec11_3-elec11_4
+VOID24       5 +voidbox4
+               -elec2_1-elec2_2-elec2_3-elec2_4
+               -elec4_1-elec4_2-elec4_3-elec4_4
+               -elec6_1-elec6_2-elec6_3-elec6_4
+               -elec8_1-elec8_2-elec8_3-elec8_4
+               -elec10_1-elec10_2-elec10_3-elec10_4
+               -elec12_1-elec12_2-elec12_3-elec12_4
+VOID25       5 +voidbox5
+               -elec2_1-elec2_2-elec2_3-elec2_4
+               -elec4_1-elec4_2-elec4_3-elec4_4
+               -elec6_1-elec6_2-elec6_3-elec6_4
+               -elec8_1-elec8_2-elec8_3-elec8_4
+               -elec10_1-elec10_2-elec10_3-elec10_4
+               -elec12_1-elec12_2-elec12_3-elec12_4
+* Water dummy
+WDUM         5 +wdum
+* Walls of the electronic boxes
+ELC1_1n      5 +elec1_1-hole1_1 -odd_Hpos|+elec1_1 -odd_pos +odd_Hpos
+ELC1_1p      5 +elec1_1-hole1_1+odd_Hneg|+elec1_1-odd_Hneg+odd_neg
+ELC1_2n      5 +elec1_2-hole1_2 -odd_Hpos|+elec1_2 -odd_pos +odd_Hpos
+ELC1_2p      5 +elec1_2-hole1_2+odd_Hneg|+elec1_2-odd_Hneg+odd_neg
+ELC1_3n      5 +elec1_3-hole1_3 -odd_Hpos|+elec1_3 -odd_pos +odd_Hpos
+ELC1_3p      5 +elec1_3-hole1_3+odd_Hneg|+elec1_3-odd_Hneg+odd_neg
+ELC1_4n      5 +elec1_4 -hole1_4 -odd_Hpos| +elec1_4 -odd_pos +odd_Hpos
+ELC1_4p      5 +elec1_4 -hole1_4 +odd_Hneg| +elec1_4 -odd_Hneg +odd_neg
+ELC2_1n      5 +elec2_1 - hole2_1 -evn_Hpos |+elec2_1 +evn_Hpos -even_pos
+ELC2_1p      5 +elec2_1 -hole2_1 +evn_Hneg | +elec2_1 -evn_Hneg +even_neg
+ELC2_2n      5 +elec2_2 - hole2_2 -evn_Hpos |+elec2_2 +evn_Hpos -even_pos
+ELC2_2p      5 +elec2_2 -hole2_2 +evn_Hneg | +elec2_2 -evn_Hneg +even_neg
+ELC2_3n      5 +elec2_3 - hole2_3 -evn_Hpos |+elec2_3 +evn_Hpos -even_pos
+ELC2_3p      5 +elec2_3 -hole2_3 +evn_Hneg | +elec2_3 -evn_Hneg +even_neg
+ELC2_4n      5 +elec2_4 - hole2_4-evn_Hpos |+elec2_4 +evn_Hpos -even_pos
+ELC2_4p      5 +elec2_4 -hole2_4 +evn_Hneg | +elec2_4 -evn_Hneg +even_neg
+ELC3_1n      5 +elec3_1-hole3_1 -odd_Hpos|+elec3_1 -odd_pos +odd_Hpos
+ELC3_1p      5 +elec3_1-hole3_1+odd_Hneg|+elec3_1-odd_Hneg+odd_neg
+ELC3_2n      5 +elec3_2-hole3_2 -odd_Hpos|+elec3_2 -odd_pos +odd_Hpos
+ELC3_2p      5 +elec3_2-hole3_2+odd_Hneg|+elec3_2-odd_Hneg+odd_neg
+ELC3_3n      5 +elec3_3-hole3_3 -odd_Hpos|+elec3_3 -odd_pos +odd_Hpos
+ELC3_3p      5 +elec3_3-hole3_3+odd_Hneg|+elec3_3-odd_Hneg+odd_neg
+ELC3_4n      5 +elec3_4-hole3_4 -odd_Hpos|+elec3_4 -odd_pos +odd_Hpos
+ELC3_4p      5 +elec3_4-hole3_4+odd_Hneg|+elec3_4-odd_Hneg+odd_neg
+ELC4_1n      5 +elec4_1 - hole4_1 -evn_Hpos |+elec4_1 +evn_Hpos -even_pos
+ELC4_1p      5 +elec4_1 -hole4_1 +evn_Hneg | +elec4_1 -evn_Hneg+even_neg
+ELC4_2n      5 +elec4_2 - hole4_2 -evn_Hpos |+elec4_2 +evn_Hpos -even_pos
+ELC4_2p      5 +elec4_2 -hole4_2 +evn_Hneg | +elec4_2 -evn_Hneg +even_neg
+ELC4_3n      5 +elec4_3 - hole4_3 -evn_Hpos |+elec4_3 +evn_Hpos -even_pos
+ELC4_3p      5 +elec4_3 -hole4_3 +evn_Hneg | +elec4_3-evn_Hneg +even_neg
+ELC4_4n      5 +elec4_4 - hole4_4 -evn_Hpos |+elec4_4 +evn_Hpos -even_pos
+ELC4_4p      5 +elec4_4 -hole4_4 +evn_Hneg | +elec4_4 -evn_Hneg +even_neg
+ELC5_1n      5 +elec5_1-hole5_1 -odd_Hpos|+elec5_1 -odd_pos +odd_Hpos
+ELC5_1p      5 +elec5_1-hole5_1+odd_Hneg|+elec5_1-odd_Hneg+odd_neg
+ELC5_2n      5 +elec5_2-hole5_2 -odd_Hpos|+elec5_2-odd_pos +odd_Hpos
+ELC5_2p      5 +elec5_2-hole5_2+odd_Hneg|+elec5_2-odd_Hneg+odd_neg
+ELC5_3n      5 +elec5_3-hole5_3 -odd_Hpos|+elec5_3 -odd_pos +odd_Hpos
+ELC5_3p      5 +elec5_3-hole5_3+odd_Hneg|+elec5_3-odd_Hneg+odd_neg
+ELC5_4n      5 +elec5_4-hole5_4 -odd_Hpos|+elec5_4 -odd_pos +odd_Hpos
+ELC5_4p      5 +elec5_4-hole5_4+odd_Hneg|+elec5_4-odd_Hneg+odd_neg
+ELC6_1n      5 +elec6_1 - hole6_1 -evn_Hpos |+elec6_1 +evn_Hpos-even_pos
+ELC6_1p      5 +elec6_1 -hole6_1 +evn_Hneg | +elec6_1 -evn_Hneg +even_neg
+ELC6_2n      5 +elec6_2 - hole6_2 -evn_Hpos |+elec6_2 +evn_Hpos -even_pos
+ELC6_2p      5 +elec6_2 -hole6_2 +evn_Hneg | +elec6_2 -evn_Hneg +even_neg
+ELC6_3n      5 +elec6_3 - hole6_3 -evn_Hpos |+elec6_3 +evn_Hpos -even_pos
+ELC6_3p      5 +elec6_3 -hole6_3 +evn_Hneg | +elec6_3 -evn_Hneg +even_neg
+ELC6_4n      5 +elec6_4 - hole6_4 -evn_Hpos |+elec6_4 +evn_Hpos -even_pos
+ELC6_4p      5 +elec6_4 -hole6_4 +evn_Hneg | +elec6_4 -evn_Hneg +even_neg
+ELC7_1n      5 +elec7_1-hole7_1 -odd_Hpos|+elec7_1 -odd_pos +odd_Hpos
+ELC7_1p      5 +elec7_1-hole7_1+odd_Hneg|+elec7_1-odd_Hneg+odd_neg
+ELC7_2n      5 +elec7_2-hole7_2 -odd_Hpos|+elec7_2 -odd_pos +odd_Hpos
+ELC7_2p      5 +elec7_2-hole7_2+odd_Hneg|+elec7_2-odd_Hneg+odd_neg
+ELC7_3n      5 +elec7_3-hole7_3 -odd_Hpos|+elec7_3 -odd_pos +odd_Hpos
+ELC7_3p      5 +elec7_3-hole7_3+odd_Hneg|+elec7_3-odd_Hneg+odd_neg
+ELC7_4n      5 +elec7_4-hole7_4 -odd_Hpos|+elec7_4 -odd_pos +odd_Hpos
+ELC7_4p      5 +elec7_4-hole7_4+odd_Hneg|+elec7_4-odd_Hneg+odd_neg
+ELC8_1n      5 +elec8_1 - hole8_1 -evn_Hpos |+elec8_1 +evn_Hpos -even_pos
+ELC8_1p      5 +elec8_1 -hole8_1 +evn_Hneg | +elec8_1 -evn_Hneg +even_neg
+ELC8_2n      5 +elec8_2 - hole8_2 -evn_Hpos |+elec8_2 +evn_Hpos -even_pos
+ELC8_2p      5 +elec8_2 -hole8_2 +evn_Hneg | +elec8_2 -evn_Hneg +even_neg
+ELC8_3n      5 +elec8_3 - hole8_3 -evn_Hpos |+elec8_3 +evn_Hpos -even_pos
+ELC8_3p      5 +elec8_3 -hole8_3 +evn_Hneg | +elec8_3 -evn_Hneg +even_neg
+ELC8_4n      5 +elec8_4 - hole8_4 -evn_Hpos |+elec8_4 +evn_Hpos -even_pos
+ELC8_4p      5 +elec8_4 -hole8_4 +evn_Hneg | +elec8_4 -evn_Hneg +even_neg
+ELC9_1n      5 +elec9_1-hole9_1 -odd_Hpos|+elec9_1 -odd_pos +odd_Hpos
+ELC9_1p      5 +elec9_1-hole9_1+odd_Hneg|+elec9_1-odd_Hneg+odd_neg
+ELC9_2n      5 +elec9_2-hole9_2 -odd_Hpos|+elec9_2-odd_pos +odd_Hpos
+ELC9_2p      5 +elec9_2-hole9_2+odd_Hneg|+elec9_2-odd_Hneg+odd_neg
+ELC9_3n      5 +elec9_3-hole9_3 -odd_Hpos|+elec9_3 -odd_pos +odd_Hpos
+ELC9_3p      5 +elec9_3-hole9_3+odd_Hneg|+elec9_3-odd_Hneg+odd_neg
+ELC9_4n      5 +elec9_4-hole9_4 -odd_Hpos|+elec9_4 -odd_pos +odd_Hpos
+ELC9_4p      5 +elec9_4-hole9_4+odd_Hneg|+elec9_4-odd_Hneg+odd_neg
+ELC10_1n     5 +elec10_1 - hole10_1 -evn_Hpos |+elec10_1 +evn_Hpos -even_pos
+ELC10_1p     5 +elec10_1 -hole10_1 +evn_Hneg | +elec10_1 -evn_Hneg +even_neg
+ELC10_2n     5 +elec10_2 - hole10_2 -evn_Hpos |+elec10_2 +evn_Hpos -even_pos
+ELC10_2p     5 +elec10_2 -hole10_2 +evn_Hneg | +elec10_2 -evn_Hneg +even_neg
+ELC10_3n     5 +elec10_3 - hole10_3 -evn_Hpos |+elec10_3 +evn_Hpos -even_pos
+ELC10_3p     5 +elec10_3 -hole10_3 +evn_Hneg | +elec10_3 -evn_Hneg +even_neg
+ELC10_4n     5 +elec10_4 - hole10_4 -evn_Hpos |+elec10_4 +evn_Hpos -even_pos
+ELC10_4p     5 +elec10_4 -hole10_4 +evn_Hneg | +elec10_4 -evn_Hneg +even_neg
+ELC11_1n     5 +elec11_1-hole11_1 -odd_Hpos|+elec11_1 -odd_pos +odd_Hpos
+ELC11_1p     5 +elec11_1-hole11_1+odd_Hneg|+elec11_1-odd_Hneg+odd_neg
+ELC11_2n     5 +elec11_2-hole11_2 -odd_Hpos|+elec11_2 -odd_pos +odd_Hpos
+ELC11_2p     5 +elec11_2-hole11_2+odd_Hneg|+elec11_2-odd_Hneg+odd_neg
+ELC11_3n     5 +elec11_3-hole11_3 -odd_Hpos|+elec11_3 -odd_pos +odd_Hpos
+ELC11_3p     5 +elec11_3-hole11_3+odd_Hneg|+elec11_3-odd_Hneg+odd_neg
+ELC11_4n     5 +elec11_4-hole11_4 -odd_Hpos|+elec11_4 -odd_pos +odd_Hpos
+ELC11_4p     5 +elec11_4-hole11_4+odd_Hneg|+elec11_4-odd_Hneg+odd_neg
+ELC12_1n     5 +elec12_1 - hole12_1 -evn_Hpos |+elec12_1 +evn_Hpos -even_pos
+ELC12_1p     5 +elec12_1 -hole12_1 +evn_Hneg | +elec12_1 -evn_Hneg +even_neg
+ELC12_2n     5 +elec12_2 - hole12_2 -evn_Hpos |+elec12_2 +evn_Hpos -even_pos
+ELC12_2p     5 +elec12_2 -hole12_2 +evn_Hneg | +elec12_2 -evn_Hneg +even_neg
+ELC12_3n     5 +elec12_3 - hole12_3 -evn_Hpos |+elec12_3 +evn_Hpos -even_pos
+ELC12_3p     5 +elec12_3 -hole12_3 +evn_Hneg | +elec12_3-evn_Hneg +even_neg
+ELC12_4n     5 +elec12_4 - hole12_4 -evn_Hpos |+elec12_4 +evn_Hpos -even_pos
+ELC12_4p     5 +elec12_4 -hole12_4 +evn_Hneg | +elec12_4 -evn_Hneg +even_neg
+* Air cavities inside the electronic boxes
+HOLE1_1      5 +hole1_1 -odd_Hpos |+hole1_1 +odd_Hneg
+HOLE1_2      5 +hole1_2 -odd_Hpos |+hole1_2 +odd_Hneg
+HOLE1_3      5 +hole1_3 -odd_Hpos |+hole1_3 +odd_Hneg
+HOLE1_4      5 +hole1_4 -odd_Hpos |+hole1_4 +odd_Hneg
+HOLE2_1      5 +hole2_1 -evn_Hpos |+hole2_1 +evn_Hneg
+HOLE2_2      5 +hole2_2 -evn_Hpos |+hole2_2 +evn_Hneg
+HOLE2_3      5 +hole2_3 -evn_Hpos |+hole2_3 +evn_Hneg
+HOLE2_4      5 +hole2_4 -evn_Hpos |+hole2_4 +evn_Hneg
+HOLE3_1      5 +hole3_1 -odd_Hpos |+hole3_1 +odd_Hneg
+HOLE3_2      5 +hole3_2 -odd_Hpos |+hole3_2 +odd_Hneg
+HOLE3_3      5 +hole3_3 -odd_Hpos |+hole3_3 +odd_Hneg
+HOLE3_4      5 +hole3_4 -odd_Hpos |+hole3_4 +odd_Hneg
+HOLE4_1      5 +hole4_1 -evn_Hpos |+hole4_1 +evn_Hneg
+HOLE4_2      5 +hole4_2 -evn_Hpos |+hole4_2 +evn_Hneg
+HOLE4_3      5 +hole4_3 -evn_Hpos |+hole4_3 +evn_Hneg
+HOLE4_4      5 +hole4_4 -evn_Hpos |+hole4_4 +evn_Hneg
+HOLE5_1      5 +hole5_1 -odd_Hpos |+hole5_1 +odd_Hneg
+HOLE5_2      5 +hole5_2 -odd_Hpos |+hole5_2 +odd_Hneg
+HOLE5_3      5 +hole5_3 -odd_Hpos |+hole5_3 +odd_Hneg
+HOLE5_4      5 +hole5_4 -odd_Hpos |+hole5_4 +odd_Hneg
+HOLE6_1      5 +hole6_1 -evn_Hpos |+hole6_1 +evn_Hneg
+HOLE6_2      5 +hole6_2 -evn_Hpos |+hole6_2 +evn_Hneg
+HOLE6_3      5 +hole6_3 -evn_Hpos |+hole6_3 +evn_Hneg
+HOLE6_4      5 +hole6_4 -evn_Hpos |+hole6_4 +evn_Hneg
+HOLE7_1      5 +hole7_1 -odd_Hpos |+hole7_1 +odd_Hneg
+HOLE7_2      5 +hole7_2 -odd_Hpos |+hole7_2 +odd_Hneg
+HOLE7_3      5 +hole7_3 -odd_Hpos |+hole7_3 +odd_Hneg
+HOLE7_4      5 +hole7_4 -odd_Hpos |+hole7_4 +odd_Hneg
+HOLE8_1      5 +hole8_1 -evn_Hpos |+hole8_1 +evn_Hneg
+HOLE8_2      5 +hole8_2 -evn_Hpos |+hole8_2 +evn_Hneg
+HOLE8_3      5 +hole8_3 -evn_Hpos |+hole8_3 +evn_Hneg
+HOLE8_4      5 +hole8_4 -evn_Hpos |+hole8_4 +evn_Hneg
+HOLE9_1      5 +hole9_1 -odd_Hpos |+hole9_1 +odd_Hneg
+HOLE9_2      5 +hole9_2 -odd_Hpos |+hole9_2 +odd_Hneg
+HOLE9_3      5 +hole9_3 -odd_Hpos |+hole9_3 +odd_Hneg
+HOLE9_4      5 +hole9_4 -odd_Hpos |+hole9_4 +odd_Hneg
+HOLE10_1     5 +hole10_1 -evn_Hpos |+hole10_1 +evn_Hneg
+HOLE10_2     5 +hole10_2 -evn_Hpos |+hole10_2 +evn_Hneg
+HOLE10_3     5 +hole10_3 -evn_Hpos |+hole10_3 +evn_Hneg
+HOLE10_4     5 +hole10_4 -evn_Hpos |+hole10_4 +evn_Hneg
+HOLE11_1     5 +hole11_1 -odd_Hpos |+hole11_1 +odd_Hneg
+HOLE11_2     5 +hole11_2 -odd_Hpos |+hole11_2 +odd_Hneg
+HOLE11_3     5 +hole11_3 -odd_Hpos |+hole11_3 +odd_Hneg
+HOLE11_4     5 +hole11_4 -odd_Hpos |+hole11_4 +odd_Hneg
+HOLE12_1     5 +hole12_1 -evn_Hpos |+hole12_1 +evn_Hneg
+HOLE12_2     5 +hole12_2 -evn_Hpos |+hole12_2 +evn_Hneg
+HOLE12_3     5 +hole12_3 -evn_Hpos |+hole12_3 +evn_Hneg
+HOLE12_4     5 +hole12_4 -evn_Hpos |+hole12_4 +evn_Hneg
+END
+GEOEND
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+* Black hole
+ASSIGNMA    BLCKHOLE   BLKBODY
+* Voids
+ASSIGNMA      VACUUM      VOID
+ASSIGNMA      VACUUM    VOID21
+ASSIGNMA      VACUUM    VOID22
+ASSIGNMA      VACUUM    VOID23
+ASSIGNMA      VACUUM    VOID24
+ASSIGNMA      VACUUM    VOID25
+* Water phantom phantom
+ASSIGNMA       WATER      WDUM
+* Voxel cage
+ASSIGNMA      VACUUM     VOXEL
+* Scintillator bars
+ASSIGNMA        M600    BAR1_1
+ASSIGNMA        M600    BAR1_2
+ASSIGNMA        M600    BAR1_3
+ASSIGNMA        M600    BAR1_4
+ASSIGNMA        M600    BAR2_1
+ASSIGNMA        M600    BAR2_2
+ASSIGNMA        M600    BAR2_3
+ASSIGNMA        M600    BAR2_4
+ASSIGNMA        M600    BAR3_1
+ASSIGNMA        M600    BAR3_2
+ASSIGNMA        M600    BAR3_3
+ASSIGNMA        M600    BAR3_4
+ASSIGNMA        M600    BAR4_1
+ASSIGNMA        M600    BAR4_2
+ASSIGNMA        M600    BAR4_3
+ASSIGNMA        M600    BAR4_4
+ASSIGNMA        M600    BAR5_1
+ASSIGNMA        M600    BAR5_2
+ASSIGNMA        M600    BAR5_3
+ASSIGNMA        M600    BAR5_4
+ASSIGNMA        M600    BAR6_1
+ASSIGNMA        M600    BAR6_2
+ASSIGNMA        M600    BAR6_3
+ASSIGNMA        M600    BAR6_4
+ASSIGNMA        M600    BAR7_1
+ASSIGNMA        M600    BAR7_2
+ASSIGNMA        M600    BAR7_3
+ASSIGNMA        M600    BAR7_4
+ASSIGNMA        M600    BAR8_1
+ASSIGNMA        M600    BAR8_2
+ASSIGNMA        M600    BAR8_3
+ASSIGNMA        M600    BAR8_4
+ASSIGNMA        M600    BAR9_1
+ASSIGNMA        M600    BAR9_2
+ASSIGNMA        M600    BAR9_3
+ASSIGNMA        M600    BAR9_4
+ASSIGNMA        M600   BAR10_1
+ASSIGNMA        M600   BAR10_2
+ASSIGNMA        M600   BAR10_3
+ASSIGNMA        M600   BAR10_4
+ASSIGNMA        M600   BAR11_1
+ASSIGNMA        M600   BAR11_2
+ASSIGNMA        M600   BAR11_3
+ASSIGNMA        M600   BAR11_4
+ASSIGNMA        M600   BAR12_1
+ASSIGNMA        M600   BAR12_2
+ASSIGNMA        M600   BAR12_3
+ASSIGNMA        M600   BAR12_4
+* Walls of the electronic boxes
+ASSIGNMA    ALUMINUM   ELC1_1n
+ASSIGNMA    ALUMINUM   ELC1_1p
+ASSIGNMA    ALUMINUM   ELC1_2n
+ASSIGNMA    ALUMINUM   ELC1_2p
+ASSIGNMA    ALUMINUM   ELC1_3n
+ASSIGNMA    ALUMINUM   ELC1_3p
+ASSIGNMA    ALUMINUM   ELC1_4n
+ASSIGNMA    ALUMINUM   ELC1_4p
+ASSIGNMA    ALUMINUM   ELC2_1n
+ASSIGNMA    ALUMINUM   ELC2_1p
+ASSIGNMA    ALUMINUM   ELC2_2n
+ASSIGNMA    ALUMINUM   ELC2_2p
+ASSIGNMA    ALUMINUM   ELC2_3n
+ASSIGNMA    ALUMINUM   ELC2_3p
+ASSIGNMA    ALUMINUM   ELC2_4n
+ASSIGNMA    ALUMINUM   ELC2_4p
+ASSIGNMA    ALUMINUM   ELC3_1n
+ASSIGNMA    ALUMINUM   ELC3_1p
+ASSIGNMA    ALUMINUM   ELC3_2n
+ASSIGNMA    ALUMINUM   ELC3_2p
+ASSIGNMA    ALUMINUM   ELC3_3n
+ASSIGNMA    ALUMINUM   ELC3_3p
+ASSIGNMA    ALUMINUM   ELC3_4n
+ASSIGNMA    ALUMINUM   ELC3_4p
+ASSIGNMA    ALUMINUM   ELC4_1n
+ASSIGNMA    ALUMINUM   ELC4_1p
+ASSIGNMA    ALUMINUM   ELC4_2n
+ASSIGNMA    ALUMINUM   ELC4_2p
+ASSIGNMA    ALUMINUM   ELC4_3n
+ASSIGNMA    ALUMINUM   ELC4_3p
+ASSIGNMA    ALUMINUM   ELC4_4n
+ASSIGNMA    ALUMINUM   ELC4_4p
+ASSIGNMA    ALUMINUM   ELC5_1n
+ASSIGNMA    ALUMINUM   ELC5_1p
+ASSIGNMA    ALUMINUM   ELC5_2n
+ASSIGNMA    ALUMINUM   ELC5_2p
+ASSIGNMA    ALUMINUM   ELC5_3n
+ASSIGNMA    ALUMINUM   ELC5_3p
+ASSIGNMA    ALUMINUM   ELC5_4n
+ASSIGNMA    ALUMINUM   ELC5_4p
+ASSIGNMA    ALUMINUM   ELC6_1n
+ASSIGNMA    ALUMINUM   ELC6_1p
+ASSIGNMA    ALUMINUM   ELC6_2n
+ASSIGNMA    ALUMINUM   ELC6_2p
+ASSIGNMA    ALUMINUM   ELC6_3n
+ASSIGNMA    ALUMINUM   ELC6_3p
+ASSIGNMA    ALUMINUM   ELC6_4n
+ASSIGNMA    ALUMINUM   ELC6_4p
+ASSIGNMA    ALUMINUM   ELC7_1n
+ASSIGNMA    ALUMINUM   ELC7_1p
+ASSIGNMA    ALUMINUM   ELC7_2n
+ASSIGNMA    ALUMINUM   ELC7_2p
+ASSIGNMA    ALUMINUM   ELC7_3n
+ASSIGNMA    ALUMINUM   ELC7_3p
+ASSIGNMA    ALUMINUM   ELC7_4n
+ASSIGNMA    ALUMINUM   ELC7_4p
+ASSIGNMA    ALUMINUM   ELC8_1n
+ASSIGNMA    ALUMINUM   ELC8_1p
+ASSIGNMA    ALUMINUM   ELC8_2n
+ASSIGNMA    ALUMINUM   ELC8_2p
+ASSIGNMA    ALUMINUM   ELC8_3n
+ASSIGNMA    ALUMINUM   ELC8_3p
+ASSIGNMA    ALUMINUM   ELC8_4n
+ASSIGNMA    ALUMINUM   ELC8_4p
+ASSIGNMA    ALUMINUM   ELC9_1n
+ASSIGNMA    ALUMINUM   ELC9_1p
+ASSIGNMA    ALUMINUM   ELC9_2n
+ASSIGNMA    ALUMINUM   ELC9_2p
+ASSIGNMA    ALUMINUM   ELC9_3n
+ASSIGNMA    ALUMINUM   ELC9_3p
+ASSIGNMA    ALUMINUM   ELC9_4n
+ASSIGNMA    ALUMINUM   ELC9_4p
+ASSIGNMA    ALUMINUM  ELC10_1n
+ASSIGNMA    ALUMINUM  ELC10_1p
+ASSIGNMA    ALUMINUM  ELC10_2n
+ASSIGNMA    ALUMINUM  ELC10_2p
+ASSIGNMA    ALUMINUM  ELC10_3n
+ASSIGNMA    ALUMINUM  ELC10_3p
+ASSIGNMA    ALUMINUM  ELC10_4n
+ASSIGNMA    ALUMINUM  ELC10_4p
+ASSIGNMA    ALUMINUM  ELC11_1n
+ASSIGNMA    ALUMINUM  ELC11_1p
+ASSIGNMA    ALUMINUM  ELC11_2n
+ASSIGNMA    ALUMINUM  ELC11_2p
+ASSIGNMA    ALUMINUM  ELC11_3n
+ASSIGNMA    ALUMINUM  ELC11_3p
+ASSIGNMA    ALUMINUM  ELC11_4n
+ASSIGNMA    ALUMINUM  ELC11_4p
+ASSIGNMA    ALUMINUM  ELC12_1n
+ASSIGNMA    ALUMINUM  ELC12_1p
+ASSIGNMA    ALUMINUM  ELC12_2n
+ASSIGNMA    ALUMINUM  ELC12_2p
+ASSIGNMA    ALUMINUM  ELC12_3n
+ASSIGNMA    ALUMINUM  ELC12_3p
+ASSIGNMA    ALUMINUM  ELC12_4n
+ASSIGNMA    ALUMINUM  ELC12_4p
+* Air cavities inside the electronix boxes
+ASSIGNMA         AIR   HOLE1_1
+ASSIGNMA         AIR   HOLE1_2
+ASSIGNMA         AIR   HOLE1_3
+ASSIGNMA         AIR   HOLE1_4
+ASSIGNMA         AIR   HOLE2_1
+ASSIGNMA         AIR   HOLE2_2
+ASSIGNMA         AIR   HOLE2_3
+ASSIGNMA         AIR   HOLE2_4
+ASSIGNMA         AIR   HOLE3_1
+ASSIGNMA         AIR   HOLE3_2
+ASSIGNMA         AIR   HOLE3_3
+ASSIGNMA         AIR   HOLE3_4
+ASSIGNMA         AIR   HOLE4_1
+ASSIGNMA         AIR   HOLE4_2
+ASSIGNMA         AIR   HOLE4_3
+ASSIGNMA         AIR   HOLE4_4
+ASSIGNMA         AIR   HOLE5_1
+ASSIGNMA         AIR   HOLE5_2
+ASSIGNMA         AIR   HOLE5_3
+ASSIGNMA         AIR   HOLE5_4
+ASSIGNMA         AIR   HOLE6_1
+ASSIGNMA         AIR   HOLE6_2
+ASSIGNMA         AIR   HOLE6_3
+ASSIGNMA         AIR   HOLE6_4
+ASSIGNMA         AIR   HOLE7_1
+ASSIGNMA         AIR   HOLE7_2
+ASSIGNMA         AIR   HOLE7_3
+ASSIGNMA         AIR   HOLE7_4
+ASSIGNMA         AIR   HOLE8_1
+ASSIGNMA         AIR   HOLE8_2
+ASSIGNMA         AIR   HOLE8_3
+ASSIGNMA         AIR   HOLE8_4
+ASSIGNMA         AIR   HOLE9_1
+ASSIGNMA         AIR   HOLE9_2
+ASSIGNMA         AIR   HOLE9_3
+ASSIGNMA         AIR   HOLE9_4
+ASSIGNMA         AIR  HOLE10_1
+ASSIGNMA         AIR  HOLE10_2
+ASSIGNMA         AIR  HOLE10_3
+ASSIGNMA         AIR  HOLE10_4
+ASSIGNMA         AIR  HOLE11_1
+ASSIGNMA         AIR  HOLE11_2
+ASSIGNMA         AIR  HOLE11_3
+ASSIGNMA         AIR  HOLE11_4
+ASSIGNMA         AIR  HOLE12_1
+ASSIGNMA         AIR  HOLE12_2
+ASSIGNMA         AIR  HOLE12_3
+ASSIGNMA         AIR  HOLE12_4
+* M600 compound material
+MATERIAL                           1.207                              M600
+COMPOUND        5.69  HYDROGEN      3.96    CARBON       0.4  NITROGENM600
+COMPOUND        0.85    OXYGEN                                        M600
+* Needed for dose to water scoring
+USERWEIG                              3.        1.                 0.0
+* mgdraw .txt-file dumping
+USERDUMP       100.0      22.0       0.0        1.                    USRDUMP
+* Scores dose to water for all particles, same region and bins as TPS
+USRBIN           10.  ALL-PART      -50.16.3997828  12.741468.50125999DoseH2O
+USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores LET x Fluence for protons, same region and bins as TPS
+USRBIN           10.    PROTON      -40.16.3997828  12.741468.50125999LET
+USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores LET**2 x Fluence for protons, same region and bins as TPS
+USRBIN           10.    PROTON      -41.16.3997828  12.741468.50125999LETsq
+USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores Rorvik RBE_max, same region and bins as TPS
+*USRBIN           10.    PROTON      -60.16.3997828  12.741468.50125999RoRBEmx
+*USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores Mairani RBE_max, same region and bins as TPS
+*USRBIN           10.  ALL-PART      -70.16.3997828  12.741468.50125999MaRBEmx
+*USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores Belli RBE_max, same region and bins as TPS
+*USRBIN           10.    PROTON      -65.16.3997828  12.741468.50125999BeRBEmx
+*USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores Belli RBE_min, same region and bins as TPS
+*USRBIN           10.    PROTON      -66.16.3997828  12.741468.50125999BeRBEmn
+*USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores dose to medium for all particles, same region and bins as TPS
+*USRBIN           10.      DOSE      -21.16.3997828  12.741468.50125999DOSE2MED
+*USRBIN    -15.400217  -8.85854 -18.79874      318.      216.       91. &
+* Scores dose over the whole target.
+* One bin for each voxel.
+*USRBIN           10.      DOSE      -23.15.899782319.7344595  10.60126DoseVOX
+*USRBIN    -15.100217 -11.26554 -18.19874      512.      512.       96. &
+* Set the random number seed
+RANDOMIZ         1.0165622209.
+* Set the number of primary histories to be simulated in the run
+* Number of spots for this treatment field: 1306
+* The following numbers are only valid for CAP_GENERAL at HUS:
+* Total number of primaries for this field: 7.43787228567e+11
+* Total number of primaries for all fields combined: 1.70167811886e+12
+START      5000000.0
+STOP
