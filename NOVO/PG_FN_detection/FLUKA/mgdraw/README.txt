@@ -16,7 +16,7 @@ mgdraw_v06_patient_detection.f
 
 mgdraw_v08_OncoRay_model.f
   Prints explicit FLUKA interactions in FLUKA regions 1 - 48 (scintillator bars) in list mode
-  18 output values per entry:
+  19 output values per entry:
   NCASE: Primary particle ID, ICODE: Interaction code, JTRACK: Incident particle type, KPART(IP): IPth secondary particle type, 
   LLOUSE: Direct from production to detection? (0=No, 1=Yes), ISPUSR(1 - 2): Non-functional, 
   Tki(IP): Total kinetic energy of IPth secondary particle [GeV], ETRACK-AM(JTRACK): Kinetic energy of incident particle [GeV]
@@ -28,7 +28,7 @@ mgdraw_v08_OncoRay_model.f
 mgdraw_v09_OncoRay_lattice.f (In development)
   Prints explicit FLUKA interactions in FLUKA regions 1 - 48 (scintillator bars) in list mode
   Exludes entries with cross scatter between lattice copies
-  18 output values per entry:
+  19 output values per entry:
   NCASE: Primary particle ID, ICODE: Interaction code, JTRACK: Incident particle type, KPART(IP): IPth secondary particle type, 
   LLOUSE: Direct from production to detection? (0=No, 1=Yes), ISPUSR(4 - 4): Cross-scatter value, 
   Tki(IP): Total kinetic energy of IPth secondary particle [GeV], ETRACK-AM(JTRACK): Kinetic energy of incident particle [GeV]
