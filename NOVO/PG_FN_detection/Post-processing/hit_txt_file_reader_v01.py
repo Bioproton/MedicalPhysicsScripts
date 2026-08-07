@@ -1,12 +1,9 @@
 """
-File for reading mgdraw-txt file results for photons and neutrons.
-This is made so that the data collecting, which can be substantial (MB - GB), 
-is only performed once. 
-
-Relevant data entries are saved in lists. 
+Script for reading gamma_hits.txt, neutron_hits.txt and all_hits.txt files
+from post-processed (read + merge) files
 """
 
-def collect_txt_data(file_adress, primaries_per_spawn=2e6, spawn_number=1) -> str:
+def collect_txt_data(file_adress) -> str:
     # Function that will collect all data from a usdraw txt output file from mgdraw_v05_detection.f 
     # Input is the adress for the file (where it is stored). Only _detected.txt-files as of 23.04.2025 works correctly
     # Optional input of the number primaries set in the FLUKA input. This is to ensure unique NCASE identifiers per proton, which might be the same across different spawns
@@ -48,43 +45,33 @@ def collect_txt_data(file_adress, primaries_per_spawn=2e6, spawn_number=1) -> st
     
     # Looping over all lines in the file
     for line in file:
-        if "Spawn number:" in line:
-            spawn_number = int(line.split(":")[1].strip().split(" ")[0]) # Spawn number in the FLUKA run. Used for altering NCASE values 
-            continue    # Spawn number lines should be skipped, they don't contain other information than spawn number
 
-        # If "***********" is in a line, it means that not enough space has been allocated to a feature value.
-        # This has so far only happened for particle age for neutrons. I choose to skip these entries.
-        if "***********" in line:
-            print(f"*********** found in file {file}")
-            print(f"Line: {line}")
-            continue
-        else:
-            line = " ".join(line.split()) # Remove all spaces, while leaving one space between each value. Spaces in output file might not be universal
-            n += 1  # Increment line counter
+        line = " ".join(line.split()) # Remove all spaces, while leaving one space between each value. Spaces in output file might not be universal
+        n += 1  # Increment line counter
 
-            # Collecting all data from the output.txt file
-            ncase.append(int(line.split(" ")[0]) + (spawn_number - 1) * primaries_per_spawn) # Avoiding equal NCASEs in two different spawns: NCASE 303 in spawn 4 for 2000 primaries is now NCASE 6303
-            icode.append(int(line.split(" ")[1]))
-            particle_in.append(int(line.split(" ")[2]))
-            particle_out.append(int(line.split(" ")[3]))
-            fnpg_flag.append(int(line.split(" ")[4]))
+        # Collecting all data from the output.txt file
+        ncase.append(int(float(line.split(" ")[0])))
+        icode.append(int(float(line.split(" ")[1])))
+        particle_in.append(int(float(line.split(" ")[2])))
+        particle_out.append(int(float(line.split(" ")[3])))
+        fnpg_flag.append(int(float(line.split(" ")[4])))
 
-            targetZ.append(int(line.split(" ")[5]))
-            targetA.append(int(line.split(" ")[6]))
-            energy_out.append(float(line.split(" ")[7]) * 1000) # Multiplied by 1000 to get MeV from GeV
-            energy_in.append(float(line.split(" ")[8]) * 1000)  # Multiplied by 1000 for get MeV from Gev
+        targetZ.append(int(float(line.split(" ")[5])))
+        targetA.append(int(float(line.split(" ")[6])))
+        energy_out.append(float(line.split(" ")[7]))    # [MeV]
+        energy_in.append(float(line.split(" ")[8])) # [MeV]
 
-            crash_x.append(float(line.split(" ")[9]))
-            crash_y.append(float(line.split(" ")[10]))
-            crash_z.append(float(line.split(" ")[11]))
+        crash_x.append(float(line.split(" ")[9]))   # [cm]
+        crash_y.append(float(line.split(" ")[10]))  # [cm]
+        crash_z.append(float(line.split(" ")[11]))  # [cm]
 
-            region.append(int(line.split(" ")[12]))
-            particle_generation.append(int(line.split(" ")[13]))
-            particle_age.append(float(line.split(" ")[14])) # Time in [µs]
+        region.append(int(float(line.split(" ")[12])))
+        particle_generation.append(int(float(line.split(" ")[13])))
+        particle_age.append(float(line.split(" ")[14])) # Time in [µs]
 
-            source_x.append(float(line.split(" ")[15]))
-            source_y.append(float(line.split(" ")[16]))
-            source_z.append(float(line.split(" ")[17]))                         
+        source_x.append(float(line.split(" ")[15])) # [cm]
+        source_y.append(float(line.split(" ")[16])) # [cm]
+        source_z.append(float(line.split(" ")[17])) # [cm]                  
 
     print(f"\rCollecting data: complete. {n} lines read. Time used: {round(time.time() - time_stamp, 3)} s", flush=True)
     return [ncase, icode, particle_in, particle_out, fnpg_flag, \
