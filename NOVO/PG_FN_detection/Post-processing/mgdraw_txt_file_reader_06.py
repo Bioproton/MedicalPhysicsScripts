@@ -8,7 +8,7 @@ Relevant data entries are saved in lists.
 
 import numpy as np
 
-def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1, FLUKA_to_meas_coords=False, mgdraw_version_8_plus=True) -> str:
+def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1, FLUKA_to_meas_coords=False, lattice_usage=False, mgdraw_version_8_plus=True) -> str:
     # Function that will collect all data from a usdraw txt output file from mgdraw_v05_detection.f 
     # Input is the adress for the file (where it is stored). Only _detected.txt-files as of 23.04.2025 works correctly
     # Optional input of the number primaries set in the FLUKA input. This is to ensure unique NCASE identifiers per proton, which might be the same across different spawns
@@ -24,28 +24,28 @@ def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1, FLUKA
     n = 0   # Line counter
     
     # Structure of detector output file, as of 06.08.2025
-    ncase = [] # NCASE values: What primary proton created the secondaries we are investigating?
-    icode = [] # Interaction codes (ICODES): What kind of interaction happened?  
-    particle_in = []   # JTRACK values: What particle initiated the interaction?
-    particle_out = []  # KPART(IP) values: What secondary resulted from the interaction?
-    fnpg_flag = [] # LLOUSE values: Does the interaction stem directly from target FN/PG-production?
+    ncase = [] #0 NCASE values: What primary proton created the secondaries we are investigating?
+    icode = [] #1 Interaction codes (ICODES): What kind of interaction happened?  
+    particle_in = []   #2 JTRACK values: What particle initiated the interaction?
+    particle_out = []  #3 KPART(IP) values: What secondary resulted from the interaction?
+    fnpg_flag = [] #4 LLOUSE values: Does the interaction stem directly from target FN/PG-production?
 
-    targetZ = []   # ICHTAR values: What is the Z-value of the target particle?
-    targetA = []   # IBTAR values: What is the A-value of the target particle?
-    energy_out = [] # Tki(IP) values: What is the kinetic energy of the secondary? [GeV -> MeV]
-    energy_in = []  # ETRACK-AM(JTRACK) values: What was the kinetic energy of the incoming particle? [GeV -> MeV]
+    targetZ = []   #5 ICHTAR values: What is the Z-value of the target particle?
+    targetA = []   #6 IBTAR values: What is the A-value of the target particle?
+    energy_out = [] #7 Tki(IP) values: What is the kinetic energy of the secondary? [GeV -> MeV]
+    energy_in = []  #8 ETRACK-AM(JTRACK) values: What was the kinetic energy of the incoming particle? [GeV -> MeV]
 
-    crash_x = [] # XSCO values: What was the X-coordinate of the interaction?   [cm]
-    crash_y = [] # YSCO values: What was the Y-coordinate of the interaction?   [cm]
-    crash_z = [] # ZSCO values: What was the Z-coordinate of the interaction?   [cm]
+    crash_x = [] #9 XSCO values: What was the X-coordinate of the interaction?   [cm]
+    crash_y = [] #10 YSCO values: What was the Y-coordinate of the interaction?   [cm]
+    crash_z = [] #11 ZSCO values: What was the Z-coordinate of the interaction?   [cm]
 
-    region = []    # MREG values: What scintillator bar did the interaction happen?
-    particle_generation = []  # LTRACK values: What "generation" was the incoming particle?
-    particle_age = []   # ATRACK * 1E6 values: At what time (since primary production) did the interaction happen? [µs]
+    region = []    #12 MREG values: What scintillator bar did the interaction happen?
+    particle_generation = []  #13 LTRACK values: What "generation" was the incoming particle?
+    particle_age = []   #14 ATRACK * 1E6 values: At what time (since primary production) did the interaction happen? [µs]
     
-    source_x = [] # SPAUSR(2) values: At what X-coordinate in the target was the FN/PG produced?    [cm]
-    source_y = [] # SPAUSR(3) values: At what Y-coordinate in the target was the FN/PG produced?    [cm]
-    source_z = [] # SPAUSR(4) values: At what Z-coordinate in the target was the FN/PG produced?    [cm]
+    source_x = [] #15 SPAUSR(2) values: At what X-coordinate in the target was the FN/PG produced?    [cm]
+    source_y = [] #16 SPAUSR(3) values: At what Y-coordinate in the target was the FN/PG produced?    [cm]
+    source_z = [] #17 SPAUSR(4) values: At what Z-coordinate in the target was the FN/PG produced?    [cm]
 
     # Only for mgdraw versions 8+
     prod_energy = [] # SPAUSR(1) values: What energy did the produced photon/neutron have at the time of production [GeV -> MeV]
@@ -98,22 +98,49 @@ def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1, FLUKA
         particle_out.append(int(line.split(" ")[3]))
         fnpg_flag.append(int(line.split(" ")[4]))
 
-        targetZ.append(int(line.split(" ")[5]))
+        # If there is no lattice, then simply append the 5th value here
+        if not lattice_usage:
+            targetZ.append(int(line.split(" ")[5]))
+
         targetA.append(int(line.split(" ")[6]))
         energy_out.append(round(float(line.split(" ")[7]) * 1000, 5)) # Multiplied by 1000 to get MeV from GeV
         energy_in.append(round(float(line.split(" ")[8]) * 1000, 5))  # Multiplied by 1000 for get MeV from Gev
 
+        hit_x = float(line.split(" ")[9])
+        hit_y = float(line.split(" ")[10])
+        hit_z = float(line.split(" ")[11])
+        
+        # Transforming the lattice copies such that it matches the master detector model
+        lattice_copy = 0
+        if lattice_usage:
+            if hit_x > 47:
+                lattice_copy = 34
+                lattice_transform = np.array([[1, 0], [0, 1]])  # Transform from 34 -> 34
+            elif hit_x < -47:
+                lattice_copy = 35
+                lattice_transform = np.array([[-1, 0], [0, -1]])    # Transform from 35 -> 34
+            elif hit_y > 47:
+                lattice_copy = 36
+                lattice_transform = np.array([[0, 1], [-1, 0]])     # Transform from 36 -> 34
+            elif hit_y < -47:
+                lattice_copy = 37
+                lattice_transform = np.array([[0, -1], [1, 0]])     # Transform from 37 -> 34
+
+            targetZ.append(lattice_copy)    # Use the fifth value as the lattice copy (MREG value from FLUKA)
+            hit_x, hit_y = np.matmul(lattice_transform, np.array([hit_x, hit_y]))
+
+        # Convert the hit coordinates from FLUKA coordinates to measurement coordinates
         if FLUKA_to_meas_coords:
-            FLUKA_coords = [float(line.split(" ")[9]), float(line.split(" ")[10]), float(line.split(" ")[11])]
+            FLUKA_coords = [hit_x, hit_y, hit_z]
             meas_coords = _coordinate_transform(FLUKA_coords)
             
             crash_x.append(meas_coords[0])
             crash_y.append(meas_coords[1])
             crash_z.append(meas_coords[2])
         else:
-            crash_x.append(float(line.split(" ")[9]))
-            crash_y.append(float(line.split(" ")[10]))
-            crash_z.append(float(line.split(" ")[11]))
+            crash_x.append(hit_x)
+            crash_y.append(hit_y)
+            crash_z.append(hit_z)
 
         region.append(int(line.split(" ")[12]))
         particle_generation.append(int(line.split(" ")[13]))
@@ -143,3 +170,16 @@ def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1, FLUKA
         crash_x, crash_y, crash_z, \
         region, particle_generation, particle_age, \
         source_x, source_y, source_z, prod_energy]
+
+
+# LATTICE TRANSFORMS AND COORDINATE TRANSFORMS
+# Assignment of detector copy (which lattice copy did this occur in?)
+
+#TODO
+
+# Transformation from lattice copy coordinate to master copy coordinates
+#TODO
+
+# Convert FLUKA coordinates to measurement coordinates
+#TODO
+#coordinate_transform()
