@@ -39,5 +39,5 @@ Scripts for post-processing FLUKA output using mgdraw
     hit filtering process after readering scintillator_interactions.txt files
     Pre-post-processing will have to be performed in advance of using this script
     Any event data will have to go through either:
-        - The original ...NOVO_v03.py-script
-        - A copy of the event building part of the ...NOVO_v03.py-script
+        - The original ...NOVO_v04.py-script
+        - A copy of the event building part of the ...NOVO_v04.py-script
