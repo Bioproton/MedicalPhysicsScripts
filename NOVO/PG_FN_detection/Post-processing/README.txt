@@ -1,26 +1,31 @@
 Scripts for post-processing FLUKA output using mgdraw
 
-- mgdraw_output_reader_NOVO_v03.py
+- mgdraw_output_reader_NOVO_v04.py
     Main post-processing script
     Performs the following:
         .load_data()
             - Reads scintillator_interactions.txt-files from a given folder
+            - Optional: Translates coordinates from FLUKA coordinates to OncoRay measurement coordinates
         .filter_hits()
             - Filters away hits not used
+            - Filters away cross scatter hits arising from LATTICE detector copies
             - Merges hits occuring in quick succession in 
-              the same scintillator bar
+              the same scintillator bar (of the same NCASE)
+            - Merges hits occuring in quick succession in
+              the same scintillator bar (of different NCASES)
+            - Optional: Rescales time stamps to a given beam current / beam structure 
             - Optional: outputs gamma_hits.txt, neutron_hits.txt and all_hits.txt files
         .event_builder()
             - Builds coincidence events (triple gamma-ray, double neutron)
             - Optional: outputs .inp files for ngimager (backprojection imaging code)
 
 
-- mgdraw_v05_output_reader.py
+- mgdraw_v05_output_reader.py -> Obsolete!
     Reads scintillator_interaction files from mgdraw version 6
 
 
 - mgdraw_txt_file_reader_06.py
-    Reads scintillator_interaction files from mgdraw version 8+
+    Reads scintillator_interaction files from mgdraw version 6, 8 and 9
 
 
 - time_converter_NOVO.py
