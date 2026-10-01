@@ -83,7 +83,10 @@ class DetectionDataStorage:
             if m > self.max_files:
                 print(f"Max files reached: {m - 1}/{self.max_files}, stopping data collection")
                 break
-            data_entry = collect_txt_data(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m, FLUKA_to_meas_coords=self.FLUKA_to_meas_coords, lattice_usage=self.lattice_usage, mgdraw_version_8_plus=mgdraw_version_8_plus) # Shape [eg. (3000, 1), ..., (3000, 1)]
+            data_entry = collect_txt_data(
+                self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn, 
+                spawn_number=m, FLUKA_to_meas_coords=self.FLUKA_to_meas_coords, 
+                lattice_usage=self.lattice_usage, mgdraw_version_8_plus=mgdraw_version_8_plus) # Shape [eg. (3000, 1), ..., (3000, 1)]
             self.data.append(data_entry)
 
         self.data = np.transpose(np.concatenate(self.data, axis=1))
@@ -91,7 +94,7 @@ class DetectionDataStorage:
         print(f"Total time used on data collection: {round(time.time() - time_stamp,2)} s")
 
 
-    def filter_hits(self, time_structure = "pulsed", beam_current=2, write_hits_to_file=False, g_threshold=10, n_threshold=200, hit_merging_time_limit=0.4):
+    def filter_hits(self, time_structure = None, beam_current=2, g_threshold=10, n_threshold=200, hit_merging_time_limit=0.4, write_hits_to_file=False, file_name_addendum = None):
         '''
         This function will first scrape together all hits for a certain NCASE (one history)
         It will then try to shape an event from whatever has happened into something that is reasonable
@@ -289,7 +292,7 @@ class DetectionDataStorage:
 
         # Step 1: Merge hits within the same bar within 400 ns (0.4 µs) [from the same NCASE]
         time_merged_all_hit_histories = []
-        hit_merging_time_limit = 0.4 # µs   [400 ns signal time, based on Table 5 in Deliverable 1.1]
+        hit_merging_time_limit = hit_merging_time_limit # µs   [400 ns signal time, based on Table 5 in Deliverable 1.1]
         overlap_num = 0
 
         for hit_history in raw_all_hit_histories:
@@ -310,9 +313,11 @@ class DetectionDataStorage:
                 
                 # Regions/scintillators with more than one hit
                 if count > 1:
+
+                    # Default merging for non-lattice data
                     overlap_num += 1
                     merged_hits = self._merge_hits(hits_to_be_merged, time_limit=hit_merging_time_limit)    # Might be one or several merged hits, depending on clustering
-
+                    
                     for hit in merged_hits:
                         
                         # Skip empty entries
@@ -320,7 +325,7 @@ class DetectionDataStorage:
                             continue
 
                         time_merged_all_hit_histories.append(hit)
-                
+
                 # Regions/scintillators with only one hit
                 else:
                     time_merged_all_hit_histories.append(hits_to_be_merged)
@@ -386,7 +391,7 @@ class DetectionDataStorage:
             self.all_hits = self.gamma_hits
 
         #------------START HIT MERGING BETWEEN DIFFERENT NCASES------------
-
+        #M = 0
         if time_structure != None: # Only do this if FLUKA times have been rescaled. Otherwise WAY too many hits will be merged together
 
             # Reset the gamma_hits, neutron_hits and combo_hits-lists
@@ -405,24 +410,52 @@ class DetectionDataStorage:
                 hits_in_region_times = hits_in_region[:, 14]    # Times for hits in this region
                 time_differences = np.diff(hits_in_region_times)    # Time differences (NB: times have been ordered)
 
-                new_group = time_differences > hit_merging_time_limit   # Where do time differences exceed 400 µs / hit_merging_time_limit
+                new_group = time_differences > hit_merging_time_limit   # Where do time differences exceed 400 ns / hit_merging_time_limit
                 group_id = np.cumsum(np.concatenate(([0], new_group)))  # Grouping of hits based on time differences (CoPilot solution)
 
                 for gid in np.unique(group_id):
-                    hits_to_merge = hits_in_region[group_id == gid] # Select hits that are in the same group (i.e. time difference < 400 µs)
+                    lattice_hit_list = []   # Container if hits in the lattice simulations occur in different detector copies (keep individual hits)
+                    hits_to_merge = hits_in_region[group_id == gid] # Select hits that are in the same group (i.e. time difference < 400 ns)
 
                     # hits_to_merge can contain only a single hit
                     # Only merge instances where it cointains more than one hit
                     if len(hits_to_merge) > 1:
-                        merged_hit = self._merge_hits(hits_to_merge, time_limit=hit_merging_time_limit)[0]   # [0] removes an unneccesary paranthesis
+
+                        if self.lattice_usage is True:
+
+                            # Figure out which hits to merge and not, based on the detector/lattice copy it hits
+                            detector_ids = hits_to_merge[:, 5]  # Lattice copy ids
+                            detector_id, num_hits = np.unique(detector_ids, return_counts=True)
+
+                            for dtc_id, num in zip(detector_id, num_hits):
+                                # Merge hits which occur in the same detector copy
+                                lattice_hits_to_merge = hits_to_merge[detector_ids == dtc_id]
+
+                                if num > 1:
+                                    merged_hit = self._merge_hits(lattice_hits_to_merge, time_limit=hit_merging_time_limit)[0]   # [0] removes an unneccesary paranthesis
+                                    lattice_hit_list.append(merged_hit)
+                                else:
+                                    merged_hit = lattice_hits_to_merge
+                                    lattice_hit_list.append(merged_hit)
+                        else:
+                            merged_hit = self._merge_hits(hits_to_merge, time_limit=hit_merging_time_limit)[0]   # [0] removes an unneccesary paranthesis
+            
                     else:
                         merged_hit = hits_to_merge  # Nothing to merge here
-                    
-                    new_all_hits.append(merged_hit[0])  # Remove the extra paranthesis
+
+                    if lattice_hit_list != []:
+                        for lattice_hit in lattice_hit_list:
+                            new_all_hits.append(lattice_hit[0]) # Remove the extra paranthesis
+                    else:
+                        new_all_hits.append(merged_hit[0])  # Remove the extra paranthesis
 
             new_all_hits = np.array(new_all_hits)   # Convert to numpy array
 
-            print(f"\nSecond hit merging complete. Time used: {round(time.time() - time_stamp, 3)} s")
+            # Resort order of hits to scale after NCASE
+            NCASEs_order = np.argsort(new_all_hits[:, 0]) # Rising order of NCASEs
+            new_all_hits = new_all_hits[NCASEs_order] # Resort data
+
+            print(f"\nSecond hit merging prior to threshold filtering complete. Time used: {round(time.time() - time_stamp, 3)} s")
             print(f"Invidual hits before second merging: {len(all_hit_regions)}")
             print(f"Individual hits after second merging: {len(new_all_hits)}")
             print(f"Hits lost due to second merging/deadtime effects: {len(all_hit_regions) - len(new_all_hits)} (-{round(100 * (1 - len(new_all_hits)/len(all_hit_regions)), 2)}%)\n")
@@ -456,7 +489,7 @@ class DetectionDataStorage:
         else:
             self.all_hits = self.gamma_hits
 
-
+        print(f"Hit filtering based on thresholds for gamma rays ({g_threshold} keV), neutrons ({n_threshold} keV) and combos ({max(g_threshold, n_threshold)} keV)")
         print(f"Total number of hit histories > {g_threshold}/{n_threshold} keV: {len(self.all_hits)}")
         print(f"Number of gamma hit histories > {g_threshold} keV: {len(self.gamma_hits)}")
         print(f"Number of neutron hit histories > {n_threshold} keV: {len(self.neutron_hits)}")
@@ -464,8 +497,15 @@ class DetectionDataStorage:
 
         if write_hits_to_file == True:
 
+            # Option to adjust name of output files
+            if file_name_addendum == None:
+                file_name_addendum = ""
+            else:
+                file_name_addendum = "_" + file_name_addendum
+
+
             # Writing gamma hit file
-            with open(self.folder_path[:-25] + r"gamma_hits.txt", "w") as gamma_file:
+            with open(self.folder_path[:-25] + rf"gamma_hits{file_name_addendum}.txt", "w") as gamma_file:
                 for hit in self.gamma_hits:
                     hit_str = ""
                     for hit_value in hit:
@@ -473,10 +513,11 @@ class DetectionDataStorage:
                     gamma_file.write(hit_str + "\n")
 
             gamma_file.close()
-            print(self.folder_path[:-25] + r"gamma_hits.txt successfully created")
+            print(self.folder_path[:-25] + rf"gamma_hits.txt successfully created")
+
 
             # Writing neutron hit file
-            with open(self.folder_path[:-25] + r"neutron_hits.txt", "w") as neutron_file:
+            with open(self.folder_path[:-25] + rf"neutron_hits{file_name_addendum}.txt", "w") as neutron_file:
                 for hit in self.neutron_hits:
                     hit_str = ""
                     for hit_value in hit:
@@ -484,10 +525,22 @@ class DetectionDataStorage:
                     neutron_file.write(hit_str + "\n")
 
             neutron_file.close()
-            print(self.folder_path[:-25] + r"neutron_hits.txt successfully created")
+            print(self.folder_path[:-25] + rf"neutron_hits{file_name_addendum}.txt successfully created")
+
+
+            # Writing combo hits file
+            with open(self.folder_path[:-25] + rf"combo_hits{file_name_addendum}.txt", "w") as combo_hits_file:
+                for hit in self.combo_hits:
+                    hit_str = ""
+                    for hit_value in hit:
+                        hit_str += str(round(hit_value, 5)) + "  "
+                    combo_hits_file.write(hit_str + "\n")
+            combo_hits_file.close()
+            print(self.folder_path[:-25] + rf"combo_hits{file_name_addendum}.txt successfully created")
+
 
             # Writing all hits file
-            with open(self.folder_path[:-25] + r"all_hits.txt", "w") as all_hits_file:
+            with open(self.folder_path[:-25] + rf"all_hits{file_name_addendum}.txt", "w") as all_hits_file:
                 for hit in self.all_hits:
                     hit_str = ""
                     for hit_value in hit:
@@ -495,7 +548,7 @@ class DetectionDataStorage:
                     all_hits_file.write(hit_str + "\n")
             
             all_hits_file.close()
-            print(self.folder_path[:-25] + r"all_hits.txt successfully created")
+            print(self.folder_path[:-25] + rf"all_hits{file_name_addendum}.txt successfully created")
 
 
 
@@ -509,6 +562,7 @@ class DetectionDataStorage:
         merged_hits = []
         interaction_times = hit_array[:, 14]
 
+        
         # Copilot assisted solution: 
         time_differences = np.abs(interaction_times[:, None] - interaction_times[None, :])  # Absolute difference matrix
         hit_pairs = np.argwhere((time_differences < time_limit) & (time_differences >= 0))    # Pairs that are within the time limits (duplicates)
@@ -517,6 +571,18 @@ class DetectionDataStorage:
 
         hit_clusters = self._clusters_from_pairs(unique_hit_pairs) # Clusters the pairs: [(1, 2), (0, 1), (3, 4)] will turn into [(0, 1, 2), (3, 4)]
 
+        # Append hits that are not part of any cluster (CoPilot solution)
+        n_hits = len(interaction_times)
+
+        clustered_indices = {
+            idx
+            for cluster in hit_clusters
+            for idx in cluster
+        }
+
+        missing_indices = set(range(n_hits)) - clustered_indices
+        hit_clusters.extend([[i] for i in sorted(missing_indices)])
+        
         for hit_cluster in hit_clusters:
             hits_2_be_merged = hit_array[hit_cluster]
             icodes = hits_2_be_merged[:, 1]
@@ -534,7 +600,7 @@ class DetectionDataStorage:
                     total_energy_deposited += hits_2_be_merged[index, 7]
                     gamma = True
 
-                elif icode in [100, 101, 106, 300]:
+                elif icode in [99, 100, 101, 106, 300]:
                     # All these energies contribute positively (assumption)
                     total_energy_deposited += hits_2_be_merged[index, 7]
                     neutron = True
@@ -546,6 +612,12 @@ class DetectionDataStorage:
                 elif icode == 208:
                     total_energy_deposited -= hits_2_be_merged[index, 7]
                     gamma = True
+
+                elif icode == 500:
+                    total_energy_deposited += hits_2_be_merged[index, 7]
+                    gamma = True
+                    neutron = True
+
                 
             if gamma and not neutron:
                 merge_icode = 219   # Assuming all gamma hits to be Compton scatters
@@ -585,6 +657,7 @@ class DetectionDataStorage:
         221 (Photoelectric)[Electron]: +
         217 (Pair production) [Electron + positron]: +
        
+        99 (Deutereon decay): +
         100 (Elastic collision) [Proton, HeavyIon]: +
         101 (Inelastic collision) [Proton, Alpha, HeavyIon]: +    (Chaotic)
         103 (Delta ray-generation) [Electron]: +
@@ -655,7 +728,7 @@ class DetectionDataStorage:
 
         return u_meas
     
-    def event_builder(self, write_ngimager_file=False):
+    def event_builder(self):
         """
         Will sort self.gamma_hits() and self.neutron_hits() to construct:
         1) self.gamma_events() and self.neutron_events() 
@@ -681,9 +754,9 @@ class DetectionDataStorage:
 
         3) Write an input file for ngimager using self.triple_gamma events and double neutron events
             This is by default set to False
-            Location of the file is self.folder_path[-26]\ (one folder up from scintillator_interactions)
+            Location of the file is self.folder_path[-26] (one folder up from scintillator_interactions)
 
-        4) Write gamma/neutron hits to .txt files
+        4) Write gamma and neutron hits to .txt files
         """
 
         # 1) Construct events from hits
@@ -709,8 +782,8 @@ class DetectionDataStorage:
         self.triple_neutron_events = [event[0:3] for event in self.neutron_events if len(event) >= 3]
 
         # 3) Write .h5 file for ngimager
-        if write_ngimager_file == True:
-            self._write_ngimager_input()
+        #if write_ngimager_file == True:
+        #    self._write_ngimager_input(ngimager_file_name=ngimager_file_name)
 
     
     def _event_builder(self, hit_array):
@@ -725,7 +798,8 @@ class DetectionDataStorage:
         event_ID = [0, 0.0, 0.0, 0.0]   # [NCASE, prodX, prodY, prodZ], ID to sort hits into the same event
 
         for hit in hit_array:
-                        # A change in event_ID means that there is a new event
+
+            # A change in event_ID means that there is a new event
             if event_ID != [hit[0], hit[15], hit[16], hit[17]]:
 
                 # Add the event if it is not the beginning event
@@ -766,11 +840,21 @@ class DetectionDataStorage:
             else:
                 print(f" {chain_length} hits : {chain_length_count}")
 
-    def _write_ngimager_input(self):
+
+    def write_ngimager_input(self, ngimager_file_name="FLUKA_NOVO_events", permitted_regions="all", only_check_two_first_hits_for_gamma_events=False):
         """
         Will write input file for ngimager code
         Based on script written by Thanh Binh Phan
+        ngimager_file_name ["FLUKA_NOVO_events"]
+        permitted_regions ["all"]: Either "all", or a list of MREG regions to include. Ex: [1, 5], or [1, 5, 7]
+        only_check_two_first_hits_for_gamma_events [False] : True or False. If true, then the restriction of permitted_regions is only enforced for the two first gamma hits
         """
+
+        # Bug catchers
+        assert isinstance(ngimager_file_name, str), f"Function input error: ngimager_file_name variable is not a string.\nCurrent input: {ngimager_file_name}"
+        assert permitted_regions=="all" or isinstance(permitted_regions, list), f"Function input error: permitted_regions variable is not 'all' or a list.\nCurrent input: {permitted_regions}"
+        assert permitted_regions != [], f"Empty list for variable permitted_regions"
+        assert isinstance(only_check_two_first_hits_for_gamma_events, bool), f"Function input error: only_check_two_first_hits_for_gamma_events variable is not a boolean\nCurrent input: {only_check_two_first_hits_for_gamma_events}"
 
         event_number = 0    # Variable to be incremented
 
@@ -778,26 +862,79 @@ class DetectionDataStorage:
                 "!       #iomp    #batch  #history       #no     #name        #reg  EdepA(MeV)      xA(cm)      yA(cm)      zA(cm)      tA(ns)        #reg  EdepB(MeV)      xB(cm)      yB(cm)      zB(cm)      tB(ns)        #reg  EdepC(MeV)      xC(cm)      yC(cm)      zC(cm)      tC(ns)" 
                 ,"!ncol   Z   N jcl kcl nclsts", "!In/Out kf-code     E(MeV)      weight", " "]
 
-        with open(self.folder_path[:-25] + r"FLUKA_NOVO_events.out", "w") as ngimager_file:
+        with open(self.folder_path[:-25] + rf"{ngimager_file_name}.out", "w") as ngimager_file:
             # Write header lines first
             for line in header_lines:
                 ngimager_file.write(line + '\n')
 
+            # ------------------GAMMAS------------------
             # Write event lines for gammas
             for event in self.triple_gamma_events:
-                #print(event)
-                event_number += 1
-                event_string = self._convert_to_ngimager_event(event, event_number, "gamma")
-                ngimager_file.write(event_string + "\n\n")
 
+                # Only add the event if certain criteria are met
+                add_event = False
+
+                # If no restrictions in regions have been made
+                if permitted_regions == "all":
+                    add_event = True
+
+                # If only one permitted region has been given
+                elif len(permitted_regions) == 1 and event[0][12] in permitted_regions:
+                    add_event = True
+
+                # If two permitted regions have been given
+                elif len(permitted_regions) == 2 and set([event[0][12], event[1][12]]).issubset(set(permitted_regions)):
+                    add_event = True
+
+                # If three or more permitted regions have been given
+                elif len(permitted_regions) >= 3:
+
+                    # If only the two first hits are to be checked
+                    if only_check_two_first_hits_for_gamma_events:
+                        if set([event[0][12], event[1][12]]).issubset(set(permitted_regions)):
+                            add_event = True
+
+                    # If all hits are to be checked
+                    else:
+                        if set([event[0][12], event[1][12]], event[2][12]).issubset(set(permitted_regions)):
+                            add_event = True
+
+                # Check if conditions have been met. If yes, add it to the file. If not, skip this event
+                if add_event is True:
+                    event_number += 1
+                    event_string = self._convert_to_ngimager_event(event, event_number, "gamma")
+                    ngimager_file.write(event_string + "\n\n")
+
+
+            # ------------------NEUTRONS------------------
             # Write event lines for neutrons
             for event in self.double_neutron_events:
-                event_number += 1
-                event_string = self._convert_to_ngimager_event(event, event_number, "neutron")
-                ngimager_file.write(event_string + "\n\n")
+
+                # Only add the event if certain criteria are met
+                add_event = False
+
+                # If no restrictions in regions have been made
+                if permitted_regions == "all":
+                    add_event = True
+
+                # If only one permitted region has been give
+                elif len(permitted_regions) == 1 and event[0][12] in permitted_regions:
+                    add_event = True
+
+                # If two or more permitted regions have been given
+                elif len(permitted_regions) >= 2 and set([event[0][12], event[1][12]]).issubset(set(permitted_regions)):
+                    add_event = True
+
+
+                # Check if conditions have been met. If yes, add it to the file. If not, skip this event
+                if add_event is True:
+                    event_number += 1
+                    event_string = self._convert_to_ngimager_event(event, event_number, "neutron")
+                    ngimager_file.write(event_string + "\n\n")
+
 
         ngimager_file.close()
-        print(self.folder_path[:-25] + r"FLUKA_NOVO_events.out successfully created")
+        print(self.folder_path[:-25] + rf"{ngimager_file_name}.out successfully created")
         
     
     def _convert_to_ngimager_event(self, event, event_number, particle):
