@@ -42,8 +42,15 @@ def find_HU_group_info(lines, HU_group_elem, i_start, i_end):
     phospho_atomic_content = 0
     calcium_atomic_content = 0
 
+    #print(i_start, i_end)
+
     for i in range(i_start, i_end):
+        #print("Her")
+
         elements = lines[i].split()
+
+       
+
         if len(elements) > 0:
             if HU_group_elem == elements[1]:
                 average_atomic_number = float(elements[2])

@@ -7,7 +7,8 @@ Goal: to assign a compositional ground truth to each mreg where a gamma/neutron 
 3) For each HU group, find the composition (density, elemental concentrations)
 '''
 import numpy as np
-from helper_functions import find_HU_group_info
+from helper_functions_2 import find_HU_group_info
+
 
 def find_voxel_GT_composition(output_file_path, regions_all, voxel_start_line, voxel_end_line, HU_start_line, HU_end_line):
     f = open(output_file_path, "r")
@@ -33,8 +34,8 @@ def find_voxel_GT_composition(output_file_path, regions_all, voxel_start_line, v
     rests = []
 
     regions = np.unique(regions_all)
-    print("length of regions:", len(regions))
-    print("length of regions (all):", len(regions_all))
+    #("length of regions:", len(regions))
+    #print("length of regions (all):", len(regions_all))
 
     for region in regions:
         HU_group_element = HU_group[int(region)-1]
@@ -50,7 +51,33 @@ def find_voxel_GT_composition(output_file_path, regions_all, voxel_start_line, v
         rest = 1 - info["oxygen_atomic_content"] - info["carbon_atomic_content"] - info["nitrogen_atomic_content"] - info["hydrogen_atomic_content"] - info["calcium_atomic_content"] - info["phospho_atomic_content"]
         rests.append(rest)
 
-    return {"density" : np.mean(densities), "oxygen": np.mean(oxygen_contents), "carbon": np.mean(carbon_contents), "nitrogen": np.mean(nitrogen_contents), "calcium": np.mean(calcium_contents),"hydrogen": np.mean(hydrogen_contents),"phosphor": np.mean(phosphor_contents), "rests" : rests}
+    return {"density" : np.mean(densities), "oxygen": np.mean(oxygen_contents), "carbon": np.mean(carbon_contents), "nitrogen": np.mean(nitrogen_contents), "calcium": np.mean(calcium_contents),"hydrogen": np.mean(hydrogen_contents),"phosphor": np.mean(phosphor_contents), "rests" : np.mean(rests)}
+
+
+def find_voxel_GT_density(output_file_path, regions_all, voxel_start_line, voxel_end_line, HU_start_line, HU_end_line):
+    f = open(output_file_path, "r")
+    lines = f.readlines()
+
+    region_number = []
+    HU_group = []
+
+    ''' 1) Assign each mreg to a HU-group'''
+    for i in range(voxel_start_line,voxel_end_line,2):
+        elements = lines[i].split()
+        region_number.append(int(elements[0]))
+        HU_group.append(elements[3])
+
+    ''' 2) For each HU group, find the composition (density, elemental concentrations)'''
+    densities = []
+
+    regions = np.unique(regions_all)
+
+    for region in regions:
+        HU_group_element = HU_group[int(region)-1]
+        info = find_HU_group_info(lines, HU_group_element,HU_start_line, HU_end_line)
+        densities.append(info["average_density"])
+
+    return {"density" : np.mean(densities)}
 
 '''
 
