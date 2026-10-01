@@ -1,0 +1,712 @@
+* OncoRay model with scintillator casing details
+TITLE                                                                 OLDFLAIR
+* Simulation defaults plus physics cards that allows Coalescense and Evaporation (for PGs)
+DEFAULTS                                                              PRECISIO
+PHYSICS           3.                                                  EVAPORAT
+PHYSICS           1.                                                  COALESCE
+PHYSICS           1.     0.005      0.15        2.        2.        2.IONSPLIT
+* Beam characteristics and beam position
+BEAM          -0.190       0.0       0.0     -1.24     -0.85       0.0PROTON
+BEAMPOS          0.0       0.0     -47.2       0.0       0.0
+ROT-DEFI        100.       0.0       0.0       20.       0.0      64.2NOVO_rot1
+ROT-DEFI        300.       0.0       90.       0.0       0.0     -10.6NOVO_rot1
+ROT-DEFI        100.       0.0       90.       0.0       0.0       0.0NOVO_rot1
+ROT-DEFI        300.       0.0       90.       0.0       0.0       0.0NOVO_rot1
+*ROT-DEFI        100.                                              -50.lattis
+ROT-DEFI        100.                           20.                64.2NOVO_rot2
+ROT-DEFI        300.                 90.       0.0       0.0     -10.6NOVO_rot2
+ROT-DEFI        100.                 90.                              NOVO_rot2
+ROT-DEFI        300.                 90.                              NOVO_rot2
+ROT-DEFI        300.                180.                              NOVO_rot2
+ROT-DEFI        300.               -180.                 0.0          lattis2
+ROT-DEFI        100.                           20.                64.2NOVO_rot3
+ROT-DEFI        300.                 90.                         -10.6NOVO_rot3
+ROT-DEFI        100.                 90.                              NOVO_rot3
+ROT-DEFI        300.                 90.                              NOVO_rot3
+ROT-DEFI        300.                 90.                           0.0NOVO_rot3
+ROT-DEFI        300.                -90.                              lattis3
+ROT-DEFI        100.                                              64.2NOVO_rot4
+ROT-DEFI                             90.       20.               -10.6NOVO_rot4
+ROT-DEFI        100.                 90.                              NOVO_rot4
+ROT-DEFI                             90.                              NOVO_rot4
+ROT-DEFI        300.                -90.                              NOVO_rot4
+ROT-DEFI        300.                 90.                              lattis4
+GEOBEGIN                                                              COMBNAME
+    0    0          
+* Black body
+SPH blkbody    0.0 0.0 0.0 100000.
+* Void sphere
+SPH Void       0.0 0.0 0.0 10000.
+* Air subsphere
+SPH Air        0.0 0.0 0.0 1000.
+RCC casing     0.0 0.0 0.0 0.0 0.0 40. 7.5
+RCC ins1.1     0.0 0.0 0.0 0.0 0.0 2. 2.45
+RCC ins1.2     0.0 0.0 2. 0.0 0.0 2. 2.45
+RCC ins1.3     0.0 0.0 4. 0.0 0.0 2. 2.45
+RCC ins1.4     0.0 0.0 6. 0.0 0.0 2. 2.45
+RCC ins1.5     0.0 0.0 8. 0.0 0.0 2. 2.45
+RCC ins1.6     0.0 0.0 10. 0.0 0.0 2. 2.45
+RCC ins1.7     0.0 0.0 12. 0.0 0.0 2. 2.45
+RCC ins1.8     0.0 0.0 14. 0.0 0.0 2. 2.45
+RCC ins1.9     0.0 0.0 16. 0.0 0.0 2. 2.45
+RCC ins1.10    0.0 0.0 18. 0.0 0.0 2. 2.45
+RCC ins2.1     0.0 0.0 20. 0.0 0.0 2. 2.45
+RCC ins2.2     0.0 0.0 22. 0.0 0.0 2. 2.45
+RCC ins2.3     0.0 0.0 24. 0.0 0.0 2. 2.45
+RCC ins2.4     0.0 0.0 26. 0.0 0.0 2. 2.45
+RCC ins2.5     0.0 0.0 28. 0.0 0.0 2. 2.45
+RCC ins2.6     0.0 0.0 30. 0.0 0.0 2. 2.45
+RCC ins2.7     0.0 0.0 32. 0.0 0.0 2. 2.45
+RCC ins2.8     0.0 0.0 34. 0.0 0.0 2. 2.45
+RCC ins2.9     0.0 0.0 36. 0.0 0.0 2. 2.45
+RCC ins2.10    0.0 0.0 38. 0.0 0.0 2. 2.45
+$start_transform NOVO_rot2
+RPP case2      -45. 45. -45. 45. -5. 30.
+$end_transform 
+$start_transform NOVO_rot3
+RPP case3      -45. 45. -45. 45. -5. 30.
+$end_transform 
+$start_transform NOVO_rot4
+RPP case4      -45. 45. -45. 45. -5. 30.
+$end_transform 
+$start_transform NOVO_rot1
+* Detector positioning: [Horizontal, Vertical, Radial]
+$start_translat 0 0 0
+RPP case       -45. 45. -45. 45. -5. 30.
+* Support bars for layer 1
+RPP SbO_p1     8.29 10.29 -15.65 15.65 -3.65 -1.65
+RPP SbI_p1     8.34 10.24 -15.6 15.6 -3.6 -1.7
+RPP SbO_n1     -10.29 -8.29 -15.65 15.65 -3.65 -1.65
+RPP SbI_n1     -10.24 -8.34 -15.6 15.6 -3.6 -1.7
+* Layer1
+YZP Hpos1      6.55
+YZP Hneg1      -6.55
+YZP S1pos1     7.1
+YZP S1neg1     -7.1
+YZP S2pos1     10.05
+YZP S2neg1     -10.05
+YZP ELpos1     11.1
+YZP ELneg1     -11.1
+* Scintillator 10
+RPP bar10      -7. 7. 1.4 2.6 -0.6 0.6
+RPP HOut10     -6.55 6.55 1. 3. -1. 1.
+RPP HIn10      -6.55 6.55 1.3 2.7 -0.7 0.7
+XCC Shm10      2. 0.0 1.65
+RPP SHolp10    6.55 7.1 1.3 2.7 -0.7 0.7
+RPP SHoln10    -7.1 -6.55 1.3 2.7 -0.7 0.7
+XCC CHol10     2. 0.0 1.35
+RCC Clpos10    7.1 2. 0.0 8. 0.0 0.0 1.27
+RCC Clneg10    -7.1 2. 0.0 -8. 0.0 0.0 1.27
+RPP Void10     -15.1 15.1 0.35 3.65 -1.65 1.65
+RCC Glpos10    7.2 2. 0.0 8. 0.0 0.0 1.17
+RCC Glneg10    -7.2 2. 0.0 -8. 0.0 0.0 1.17
+* Scintillator 11
+RPP bar11      -7. 7. -2.6 -1.4 -0.6 0.6
+RPP HOut11     -6.55 6.55 -3. -1. -1. 1.
+RPP HIn11      -6.55 6.55 -2.7 -1.3 -0.7 0.7
+XCC Shm11      -2. 0.0 1.65
+RPP SHolp11    6.55 7.1 -2.7 -1.3 -0.7 0.7
+RPP SHoln11    -7.1 -6.55 -2.7 -1.3 -0.7 0.7
+XCC CHol11     -2. 0.0 1.35
+RCC Clpos11    7.1 -2. 0.0 8. 0.0 0.0 1.27
+RCC Clneg11    -7.1 -2. 0.0 -8. 0.0 0.0 1.27
+RPP Void11     -15.1 15.1 -3.65 -0.35 -1.65 1.65
+RCC Glpos11    7.2 -2. 0.0 8. 0.0 0.0 1.17
+RCC Glneg11    -7.2 -2. 0.0 -8. 0.0 0.0 1.17
+* Layer2
+XZP Hpos2      7.3
+XZP Hneg2      -6.7
+XZP S1pos2     7.35
+XZP S1neg2     -6.75
+XZP S2pos2     22.35
+XZP S2neg2     -21.75
+* Support bars for layer 2
+RPP SbO_p2     -10.75 10.75 14.8 16.8 -0.25 1.75
+RPP SbI_p2     -10.7 10.7 14.85 16.75 -0.2 1.7
+RPP SbO_n2     -10.75 10.75 -16.2 -14.2 -0.25 1.75
+RPP SbI_n2     -10.7 10.7 -16.15 -14.25 -0.2 1.7
+* Scintillator 20
+RPP bar20      -3. -1.8 -7. 7. 3.2 4.4
+RPP HOut20     -3.15 -1.65 -7. 7. 3.05 4.55
+RPP HIn20      -3.1 -1.7 -7. 7. 3.1 4.5
+RPP Shm20      -4.45 -1.45 -22. 22. 1.75 4.75
+RPP SHolp20    -3.1 -1.7 7. 7.05 3.1 4.5
+RPP SHoln20    -3.1 -1.7 -7.05 -7. 3.1 4.5
+RPP CHol20     -4.4 -1.5 -22. 22. 1.8 4.7
+RPP Void20     -4.45 -1.45 -22. 22. 1.75 4.75
+* Scintillator 21
+RPP bar21      1.8 3. -6.7 7.3 3.2 4.4
+RPP HOut21     1.65 3.15 -6.7 7.3 3.05 4.55
+RPP HIn21      1.7 3.1 -6.7 7.3 3.1 4.5
+RPP Shm21      0.35 3.35 -21.7 22.3 1.75 4.75
+RPP SHolp21    1.7 3.1 7.3 7.35 3.1 4.5
+RPP SHoln21    1.7 3.1 -6.75 -6.7 3.1 4.5
+RPP CHol21     0.4 3.3 -21.7 22.3 1.8 4.7
+RPP Void21     0.35 3.35 -21.7 22.3 1.75 4.75
+* Layer3
+YZP Hpos3      6.75
+YZP Hneg3      -6.75
+YZP S1pos3     7.05
+YZP S1neg3     -7.05
+YZP S2pos3     7.75
+YZP S2neg3     -7.75
+YZP ELpos3     24.6
+YZP ELneg3     -24.6
+* Scintillator 30
+RPP bar30      -7. 7. 2.6 3.8 11.7 12.9
+RPP HOut30     -6.75 6.75 2.2 4.2 11.3 13.3
+RPP HIn30      -6.75 6.75 2.5 3.9 11.6 13.
+XCC Shm30      3.2 12.3 3.
+RPP SHolp30    6.75 7.05 2.5 3.9 11.6 13.
+RPP SHoln30    -7.05 -6.75 2.5 3.9 11.6 13.
+XCC CHol30     3.2 12.3 2.7
+RCC Clpos30    7.1 3.2 12.3 35. 0.0 0.0 2.54
+RCC Clneg30    -7.1 3.2 12.3 -35. 0.0 0.0 2.54
+RPP Void30     -42.1 42.1 0.2 6.2 9.3 15.3
+RCC Glpos30    7.2 3.2 12.3 35. 0.0 0.0 2.44
+RCC Glneg30    -7.2 3.2 12.3 -35. 0.0 0.0 2.44
+* Scintillator 31
+RPP bar31      -7. 7. -3.7 -2.5 11.7 12.9
+RPP HOut31     -6.75 6.75 -4.1 -2.1 11.3 13.3
+RPP HIn31      -6.75 6.75 -3.8 -2.4 11.6 13.
+XCC Shm31      -3.1 12.3 3.
+RPP SHolp31    6.75 7.05 -3.8 -2.4 11.6 13.
+RPP SHoln31    -7.05 -6.75 -3.8 -2.4 11.6 13.
+XCC CHol31     -3.1 12.3 2.7
+RCC Clpos31    7.1 -3.1 12.3 35. 0.0 0.0 2.54
+RCC Clneg31    -7.1 -3.1 12.3 -35. 0.0 0.0 2.54
+RPP Void31     -42.1 42.1 -6.1 -0.1 9.3 15.3
+RCC Glpos31    7.2 -3.1 12.3 35. 0.0 0.0 2.44
+RCC Glneg31    -7.2 -3.1 12.3 -35. 0.0 0.0 2.44
+* Scintillator 32
+RPP bar32      -7. 7. -10.1 -8.9 11.7 12.9
+RPP HOut32     -6.75 6.75 -10.5 -8.5 11.3 13.3
+RPP HIn32      -6.75 6.75 -10.2 -8.8 11.6 13.
+XCC Shm32      -9.5 12.3 3.
+RPP SHolp32    6.75 7.05 -10.2 -8.8 11.6 13.
+RPP SHoln32    -7.05 -6.75 -10.2 -8.8 11.6 13.
+XCC CHol32     -9.5 12.3 2.7
+RCC Clpos32    7.1 -9.5 12.3 35. 0.0 0.0 2.54
+RCC Clneg32    -7.1 -9.5 12.3 -35. 0.0 0.0 2.54
+RPP Void32     -42.1 42.1 -12.5 -6.5 9.3 15.3
+RCC Glpos32    7.2 -9.5 12.3 35. 0.0 0.0 2.44
+RCC Glneg32    -7.2 -9.5 12.3 -35. 0.0 0.0 2.44
+* Scintillator 33
+RPP bar33      -7. 7. 8.7 9.9 11.7 12.9
+RPP HOut33     -6.75 6.75 8.3 10.3 11.3 13.3
+RPP HIn33      -6.75 6.75 8.6 10. 11.6 13.
+XCC Shm33      9.3 12.3 3.
+RPP SHolp33    6.75 7.05 8.6 10. 11.6 13.
+RPP SHoln33    -7.05 -6.75 8.6 10. 11.6 13.
+XCC CHol33     9.3 12.3 2.7
+RCC Clpos33    7.1 9.3 12.3 35. 0.0 0.0 2.54
+RCC Clneg33    -7.1 9.3 12.3 -35. 0.0 0.0 2.54
+RPP Void33     -42.1 42.1 6.3 12.3 9.3 15.3
+RCC Glpos33    7.2 9.3 12.3 35. 0.0 0.0 2.44
+RCC Glneg33    -7.2 9.3 12.3 -35. 0.0 0.0 2.44
+* Layer4
+XZP Hpos4      6.75
+XZP Hneg4      -6.75
+XZP S1pos4     7.05
+XZP S1neg4     -7.05
+XZP S2pos4     7.75
+XZP S2neg4     -7.75
+XZP ELpos4     24.6
+XZP ELneg4     -24.6
+* Scintillator 40
+RPP bar40      -3.7 -2.5 -7. 7. 19.5 20.7
+RPP HOut40     -4.1 -2.1 -6.75 6.75 19.1 21.1
+RPP HIn40      -3.8 -2.4 -6.75 6.75 19.4 20.8
+YCC Shm40      20.1 -3.1 3.
+RPP SHolp40    -3.8 -2.4 6.75 7.05 19.4 20.8
+RPP SHoln40    -3.8 -2.4 -7.05 -6.75 19.4 20.8
+YCC CHol40     20.1 -3.1 2.7
+RCC Clpos40    -3.1 7.1 20.1 0.0 35. 0.0 2.54
+RCC Clneg40    -3.1 -7.1 20.1 0.0 -35. 0.0 2.54
+RPP Void40     -6.1 -0.1 -42.1 42.1 17.1 23.1
+RCC Glpos40    -3.1 7.2 20.1 0.0 35. 0.0 2.44
+RCC Glneg40    -3.1 -7.2 20.1 0.0 -35. 0.0 2.44
+* Scintillator 41
+RPP bar41      2.5 3.7 -7. 7. 19.5 20.7
+RPP HOut41     2.1 4.1 -6.75 6.75 19.1 21.1
+RPP HIn41      2.4 3.8 -6.75 6.75 19.4 20.8
+YCC Shm41      20.1 3.1 3.
+RPP SHolp41    2.4 3.8 6.75 7.05 19.4 20.8
+RPP SHoln41    2.4 3.8 -7.05 -6.75 19.4 20.8
+YCC CHol41     20.1 3.1 2.7
+RCC Clpos41    3.1 7.1 20.1 0.0 35. 0.0 2.54
+RCC Clneg41    3.1 -7.1 20.1 0.0 -35. 0.0 2.54
+RPP Void41     0.1 6.1 -42.1 42.1 17.1 23.1
+RCC Glpos41    3.1 7.2 20.1 0.0 35. 0.0 2.44
+RCC Glneg41    3.1 -7.2 20.1 0.0 -35. 0.0 2.44
+* Scintillator 42
+RPP bar42      8.6 9.8 -7. 7. 19.5 20.7
+RPP HOut42     8.2 10.2 -6.75 6.75 19.1 21.1
+RPP HIn42      8.5 9.9 -6.75 6.75 19.4 20.8
+YCC Shm42      20.1 9.2 3.
+RPP SHolp42    8.5 9.9 6.75 7.05 19.4 20.8
+RPP SHoln42    8.5 9.9 -7.05 -6.75 19.4 20.8
+YCC CHol42     20.1 9.2 2.7
+RCC Clpos42    9.2 7.1 20.1 0.0 35. 0.0 2.54
+RCC Clneg42    9.2 -7.1 20.1 0.0 -35. 0.0 2.54
+RPP Void42     6.2 12.2 -42.1 42.1 17.1 23.1
+RCC Glpos42    9.2 7.2 20.1 0.0 35. 0.0 2.44
+RCC Glneg42    9.2 -7.2 20.1 0.0 -35. 0.0 2.44
+* Scintillator 43
+RPP bar43      -9.9 -8.7 -7. 7. 19.5 20.7
+RPP HOut43     -10.3 -8.3 -6.75 6.75 19.1 21.1
+RPP HIn43      -10. -8.6 -6.75 6.75 19.4 20.8
+YCC Shm43      20.1 -9.3 3.
+RPP SHolp43    -10. -8.6 6.75 7.05 19.4 20.8
+RPP SHoln43    -10. -8.6 -7.05 -6.75 19.4 20.8
+YCC CHol43     20.1 -9.3 2.7
+RCC Clpos43    -9.3 7.1 20.1 0.0 35. 0.0 2.54
+RCC Clneg43    -9.3 -7.1 20.1 0.0 -35. 0.0 2.54
+RPP Void43     -12.3 -6.3 -42.1 42.1 17.1 23.1
+RCC Glpos43    -9.3 7.2 20.1 0.0 35. 0.0 2.44
+RCC Glneg43    -9.3 -7.2 20.1 0.0 -35. 0.0 2.44
+$end_translat 
+$end_transform 
+END
+* Scintillator regions: MREG = 1 - 14
+BAR10        5 +bar10
+BAR11        5 +bar11
+BAR20        5 +bar20
+BAR21        5 +bar21
+BAR30        5 +bar30
+BAR31        5 +bar31
+BAR32        5 +bar32
+BAR33        5 +bar33
+BAR40        5 +bar40
+BAR41        5 +bar41
+BAR42        5 +bar42
+BAR43        5 +bar43
+* PMMA phantom target
+CASING       5 +casing -ins1.1 -ins1.2 -ins1.3 -ins1.4 -ins1.5 -ins1.6 -ins1.7 -ins1.8 -ins1.9 -ins1.10-ins2.1
+               -ins2.2 -ins2.3 -ins2.4 -ins2.5 -ins2.6 -ins2.7 -ins2.8 -ins2.9 -ins2.10
+CASE2        5 +case2
+CASE3        5 +case3
+CASE4        5 +case4
+INS1.1       5 +ins1.1
+INS1.2       5 +ins1.2
+INS1.3       5 +ins1.3
+INS1.4       5 +ins1.4
+INS1.5       5 +ins1.5
+INS1.6       5 +ins1.6
+INS1.7       5 +ins1.7
+INS1.8       5 +ins1.8
+INS1.9       5 +ins1.9
+INS1.10      5 +ins1.10
+INS2.1       5 +ins2.1
+INS2.2       5 +ins2.2
+INS2.3       5 +ins2.3
+INS2.4       5 +ins2.4
+INS2.5       5 +ins2.5
+INS2.6       5 +ins2.6
+INS2.7       5 +ins2.7
+INS2.8       5 +ins2.8
+INS2.9       5 +ins2.9
+INS2.10      5 +ins2.10
+PROTYP       5 +case -Void10 -Void11 -Void20 -Void21 -Void30 -Void31 -Void32 -Void33 -Void40 -Void41 -Void42
+               -Void43 -SbO_p1 -SbO_n1 -SbO_p2 -SbO_n2
+AIR          5 +Air-case -casing -case2-case3 -case4
+VOID         5 +Void -Air
+BLKBODY      5 +blkbody -Void
+* Support bars for layer 1
+SBO_P1       5 +SbO_p1 -SbI_p1
+SBI_P1       5 +SbI_p1
+SBO_N1       5 +SbO_n1 -SbI_n1
+SBI_N1       5 +SbI_n1
+* Scintillator 10
+HOUSE10      5 +HOut10 -HIn10 -Hneg1 +Hpos1
+S1POS10      5 +Shm10 -SHolp10 -Hpos1 +S1pos1
+S1NEG10      5 +Shm10 -SHoln10 +Hneg1 -S1neg1
+S2POS10      5 +Shm10 -CHol10 -S1pos1 +S2pos1
+S2NEG10      5 +Shm10 -CHol10 +S1neg1 -S2neg1
+CLPOS10      5 +Clpos10 -ELpos1
+CLNEG10      5 +Clneg10 +ELneg1
+GLPOS10      5 +Clpos10 -Glpos10 +ELpos1
+GLNEG10      5 +Clneg10 -Glneg10 -ELneg1
+VACPOS10     5 +Glpos10 +ELpos1
+VACNEG10     5 +Glneg10 -ELneg1
+VOID10       5 +HIn10 -bar10 -Hneg1 +Hpos1|+Void10 -HOut10 -Hneg1 +Hpos1|+SHolp10 -bar10 -Hpos1 +S1pos1|+CHol10
+               -Clpos10 -S1pos1 +S2pos1|Void10 -Shm10 -Hpos1 + S2pos1|Void10 -S2pos1 -Clpos10|SHoln10 -bar10
+               +Hneg1 -S1neg1|CHol10 -Clneg10 +S1neg1 -S2neg1|Void10 -Shm10 +Hneg1 -S2neg1|Void10 +S2neg1 -Clneg10
+* Scintillator 11
+HOUSE11      5 +HOut11 -HIn11 -Hneg1 +Hpos1
+S1POS11      5 +Shm11 -SHolp11 -Hpos1 +S1pos1
+S1NEG11      5 +Shm11 -SHoln11 +Hneg1 -S1neg1
+S2POS11      5 +Shm11 -CHol11 -S1pos1 +S2pos1
+S2NEG11      5 +Shm11 -CHol11 +S1neg1 -S2neg1
+CLPOS11      5 +Clpos11 -ELpos1
+CLNEG11      5 +Clneg11 +ELneg1
+GLPOS11      5 +Clpos11 -Glpos11 +ELpos1
+GLNEG11      5 +Clneg11 -Glneg11 -ELneg1
+VACPOS11     5 +Glpos11 +ELpos1
+VACNEG11     5 +Glneg11 -ELneg1
+VOID11       5 +HIn11 -bar11 -Hneg1 +Hpos1|+Void11 -HOut11 -Hneg1 +Hpos1|+SHolp11 -bar11 -Hpos1 +S1pos1|+CHol11
+               -Clpos11 -S1pos1 +S2pos1|Void11 -Shm11 -Hpos1 + S2pos1|Void11 -S2pos1 -Clpos11|SHoln11 -bar11
+               +Hneg1 -S1neg1|CHol11 -Clneg11 +S1neg1 -S2neg1|Void11 -Shm11 +Hneg1 -S2neg1|Void11 +S2neg1 -Clneg11
+* Support bars for layer 2
+SBO_P2       5 +SbO_p2 -SbI_p2
+SBI_P2       5 +SbI_p2
+SBO_N2       5 +SbO_n2 -SbI_n2
+SBI_N2       5 +SbI_n2
+* Scintillator 20
+HOUSE20      5 +HOut20 -HIn20 -Hneg2 +Hpos2
+S1POS20      5 +Shm20 -SHolp20 -Hpos2 +S1pos2
+S1NEG20      5 +Shm20 -SHoln20 +Hneg2 -S1neg2
+S2POS20      5 +Shm20 -CHol20 -S1pos2 +S2pos2
+S2NEG20      5 +Shm20 -CHol20 +S1neg2 -S2neg2
+VOID20       5 +HIn20 -bar20 -Hneg2 +Hpos2|+Void20 -HOut20 -Hneg2 +Hpos2|+SHolp20 -bar20 -Hpos2 +S1pos2|+CHol20
+               -S1pos2 +S2pos2|Void20 -Shm20 -Hpos2 + S2pos2|Void20 -S2pos2|SHoln20 -bar20 +Hneg2 -S1neg2|CHol20
+               +S1neg2 -S2neg2|Void20 -Shm20 +Hneg2 -S2neg2|Void20 +S2neg2
+* Scintillator 21
+HOUSE21      5 +HOut21 -HIn21 -Hneg2 +Hpos2
+S1POS21      5 +Shm21 -SHolp21 -Hpos2 +S1pos2
+S1NEG21      5 +Shm21 -SHoln21 +Hneg2 -S1neg2
+S2POS21      5 +Shm21 -CHol21 -S1pos2 +S2pos2
+S2NEG21      5 +Shm21 -CHol21 +S1neg2 -S2neg2
+VOID21       5 +HIn21 -bar21 -Hneg2 +Hpos2|+Void21 -HOut21 -Hneg2 +Hpos2|+SHolp21 -bar21 -Hpos2 +S1pos2|+CHol21
+               -S1pos2 +S2pos2|Void21 -Shm21 -Hpos2 + S2pos2|Void21 -S2pos2|SHoln21 -bar21 +Hneg2 -S1neg2|CHol21
+               +S1neg2 -S2neg2|Void21 -Shm21 +Hneg2 -S2neg2|Void21 +S2neg2
+* Scintillator 30
+HOUSE30      5 +HOut30 -HIn30 -Hneg3 +Hpos3
+S1POS30      5 +Shm30 -SHolp30 -Hpos3 +S1pos3
+S1NEG30      5 +Shm30 -SHoln30 +Hneg3 -S1neg3
+S2POS30      5 +Shm30 -CHol30 -S1pos3 +S2pos3
+S2NEG30      5 +Shm30 -CHol30 +S1neg3 -S2neg3
+CLPOS30      5 +Clpos30 -ELpos3
+CLNEG30      5 +Clneg30 +ELneg3
+GLPOS30      5 +Clpos30 -Glpos30 +ELpos3
+GLNEG30      5 +Clneg30 -Glneg30 -ELneg3
+VACPOS30     5 +Glpos30 +ELpos3
+VACNEG30     5 +Glneg30 -ELneg3
+VOID30       5 +HIn30 -bar30 -Hneg3 +Hpos3|+Void30 -HOut30 -Hneg3 +Hpos3|+SHolp30 -bar30 -Hpos3 +S1pos3|+CHol30
+               -Clpos30 -S1pos3 +S2pos3|Void30 -Shm30 -Hpos3 + S2pos3|Void30 -S2pos3 -Clpos30|SHoln30 -bar30
+               +Hneg3 -S1neg3|CHol30 -Clneg30 +S1neg3 -S2neg3|Void30 -Shm30 +Hneg3 -S2neg3|Void30 +S2neg3 -Clneg30
+* Scintillator 31
+HOUSE31      5 +HOut31 -HIn31 -Hneg3 +Hpos3
+S1POS31      5 +Shm31 -SHolp31 -Hpos3 +S1pos3
+S1NEG31      5 +Shm31 -SHoln31 +Hneg3 -S1neg3
+S2POS31      5 +Shm31 -CHol31 -S1pos3 +S2pos3
+S2NEG31      5 +Shm31 -CHol31 +S1neg3 -S2neg3
+CLPOS31      5 +Clpos31 -ELpos3
+CLNEG31      5 +Clneg31 +ELneg3
+GLPOS31      5 +Clpos31 -Glpos31 +ELpos3
+GLNEG31      5 +Clneg31 -Glneg31 -ELneg3
+VACPOS31     5 +Glpos31 +ELpos3
+VACNEG31     5 +Glneg31 -ELneg3
+VOID31       5 +HIn31 -bar31 -Hneg3 +Hpos3|+Void31 -HOut31 -Hneg3 +Hpos3|+SHolp31 -bar31 -Hpos3 +S1pos3|+CHol31
+               -Clpos31 -S1pos3 +S2pos3|Void31 -Shm31 -Hpos3 + S2pos3|Void31 -S2pos3 -Clpos31|SHoln31 -bar31
+               +Hneg3 -S1neg3|CHol31 -Clneg31 +S1neg3 -S2neg3|Void31 -Shm31 +Hneg3 -S2neg3|Void31 +S2neg3 -Clneg31
+* Scintillator 32
+HOUSE32      5 +HOut32 -HIn32 -Hneg3 +Hpos3
+S1POS32      5 +Shm32 -SHolp32 -Hpos3 +S1pos3
+S1NEG32      5 +Shm32 -SHoln32 +Hneg3 -S1neg3
+S2POS32      5 +Shm32 -CHol32 -S1pos3 +S2pos3
+S2NEG32      5 +Shm32 -CHol32 +S1neg3 -S2neg3
+CLPOS32      5 +Clpos32 -ELpos3
+CLNEG32      5 +Clneg32 +ELneg3
+GLPOS32      5 +Clpos32 -Glpos32 +ELpos3
+GLNEG32      5 +Clneg32 -Glneg32 -ELneg3
+VACPOS32     5 +Glpos32 +ELpos3
+VACNEG32     5 +Glneg32 -ELneg3
+VOID32       5 +HIn32 -bar32 -Hneg3 +Hpos3|+Void32 -HOut32 -Hneg3 +Hpos3|+SHolp32 -bar32 -Hpos3 +S1pos3|+CHol32
+               -Clpos32 -S1pos3 +S2pos3|Void32 -Shm32 -Hpos3 + S2pos3|Void32 -S2pos3 -Clpos32|SHoln32 -bar32
+               +Hneg3 -S1neg3|CHol32 -Clneg32 +S1neg3 -S2neg3|Void32 -Shm32 +Hneg3 -S2neg3|Void32 +S2neg3 -Clneg32
+* Scintillator 33
+HOUSE33      5 +HOut33 -HIn33 -Hneg3 +Hpos3
+S1POS33      5 +Shm33 -SHolp33 -Hpos3 +S1pos3
+S1NEG33      5 +Shm33 -SHoln33 +Hneg3 -S1neg3
+S2POS33      5 +Shm33 -CHol33 -S1pos3 +S2pos3
+S2NEG33      5 +Shm33 -CHol33 +S1neg3 -S2neg3
+CLPOS33      5 +Clpos33 -ELpos3
+CLNEG33      5 +Clneg33 +ELneg3
+GLPOS33      5 +Clpos33 -Glpos33 +ELpos3
+GLNEG33      5 +Clneg33 -Glneg33 -ELneg3
+VACPOS33     5 +Glpos33 +ELpos3
+VACNEG33     5 +Glneg33 -ELneg3
+VOID33       5 +HIn33 -bar33 -Hneg3 +Hpos3|+Void33 -HOut33 -Hneg3 +Hpos3|+SHolp33 -bar33 -Hpos3 +S1pos3|+CHol33
+               -Clpos33 -S1pos3 +S2pos3|Void33 -Shm33 -Hpos3 + S2pos3|Void33 -S2pos3 -Clpos33|SHoln33 -bar33
+               +Hneg3 -S1neg3|CHol33 -Clneg33 +S1neg3 -S2neg3|Void33 -Shm33 +Hneg3 -S2neg3|Void33 +S2neg3 -Clneg33
+* Scintillator 40
+HOUSE40      5 +HOut40 -HIn40 -Hneg4 +Hpos4
+S1POS40      5 +Shm40 -SHolp40 -Hpos4 +S1pos4
+S1NEG40      5 +Shm40 -SHoln40 +Hneg4 -S1neg4
+S2POS40      5 +Shm40 -CHol40 -S1pos4 +S2pos4
+S2NEG40      5 +Shm40 -CHol40 +S1neg4 -S2neg4
+CLPOS40      5 +Clpos40 -ELpos4
+CLNEG40      5 +Clneg40 +ELneg4
+GLPOS40      5 +Clpos40 -Glpos40 +ELpos4
+GLNEG40      5 +Clneg40 -Glneg40 -ELneg4
+VACPOS40     5 +Glpos40 +ELpos4
+VACNEG40     5 +Glneg40 -ELneg4
+VOID40       5 +HIn40 -bar40 -Hneg4 +Hpos4|+Void40 -HOut40 -Hneg4 +Hpos4|+SHolp40 -bar40 -Hpos4 +S1pos4|+CHol40
+               -Clpos40 -S1pos4 +S2pos4|Void40 -Shm40 -Hpos4 + S2pos4|Void40 -S2pos4 -Clpos40|SHoln40 -bar40
+               +Hneg4 -S1neg4|CHol40 -Clneg40 +S1neg4 -S2neg4|Void40 -Shm40 +Hneg4 -S2neg4|Void40 +S2neg4 -Clneg40
+* Scintillator 41
+HOUSE41      5 +HOut41 -HIn41 -Hneg4 +Hpos4
+S1POS41      5 +Shm41 -SHolp41 -Hpos4 +S1pos4
+S1NEG41      5 +Shm41 -SHoln41 +Hneg4 -S1neg4
+S2POS41      5 +Shm41 -CHol41 -S1pos4 +S2pos4
+S2NEG41      5 +Shm41 -CHol41 +S1neg4 -S2neg4
+CLPOS41      5 +Clpos41 -ELpos4
+CLNEG41      5 +Clneg41 +ELneg4
+GLPOS41      5 +Clpos41 -Glpos41 +ELpos4
+GLNEG41      5 +Clneg41 -Glneg41 -ELneg4
+VACPOS41     5 +Glpos41 +ELpos4
+VACNEG41     5 +Glneg41 -ELneg4
+VOID41       5 +HIn41 -bar41 -Hneg4 +Hpos4|+Void41 -HOut41 -Hneg4 +Hpos4|+SHolp41 -bar41 -Hpos4 +S1pos4|+CHol41
+               -Clpos41 -S1pos4 +S2pos4|Void41 -Shm41 -Hpos4 + S2pos4|Void41 -S2pos4 -Clpos41|SHoln41 -bar41
+               +Hneg4 -S1neg4|CHol41 -Clneg41 +S1neg4 -S2neg4|Void41 -Shm41 +Hneg4 -S2neg4|Void41 +S2neg4 -Clneg41
+* Scintillator 42
+HOUSE42      5 +HOut42 -HIn42 -Hneg4 +Hpos4
+S1POS42      5 +Shm42 -SHolp42 -Hpos4 +S1pos4
+S1NEG42      5 +Shm42 -SHoln42 +Hneg4 -S1neg4
+S2POS42      5 +Shm42 -CHol42 -S1pos4 +S2pos4
+S2NEG42      5 +Shm42 -CHol42 +S1neg4 -S2neg4
+CLPOS42      5 +Clpos42 -ELpos4
+CLNEG42      5 +Clneg42 +ELneg4
+GLPOS42      5 +Clpos42 -Glpos42 +ELpos4
+GLNEG42      5 +Clneg42 -Glneg42 -ELneg4
+VACPOS42     5 +Glpos42 +ELpos4
+VACNEG42     5 +Glneg42 -ELneg4
+VOID42       5 +HIn42 -bar42 -Hneg4 +Hpos4|+Void42 -HOut42 -Hneg4 +Hpos4|+SHolp42 -bar42 -Hpos4 +S1pos4|+CHol42
+               -Clpos42 -S1pos4 +S2pos4|Void42 -Shm42 -Hpos4 + S2pos4|Void42 -S2pos4 -Clpos42|SHoln42 -bar42
+               +Hneg4 -S1neg4|CHol42 -Clneg42 +S1neg4 -S2neg4|Void42 -Shm42 +Hneg4 -S2neg4|Void42 +S2neg4 -Clneg42
+* Scintillator 43
+HOUSE43      5 +HOut43 -HIn43 -Hneg4 +Hpos4
+S1POS43      5 +Shm43 -SHolp43 -Hpos4 +S1pos4
+S1NEG43      5 +Shm43 -SHoln43 +Hneg4 -S1neg4
+S2POS43      5 +Shm43 -CHol43 -S1pos4 +S2pos4
+S2NEG43      5 +Shm43 -CHol43 +S1neg4 -S2neg4
+CLPOS43      5 +Clpos43 -ELpos4
+CLNEG43      5 +Clneg43 +ELneg4
+GLPOS43      5 +Clpos43 -Glpos43 +ELpos4
+GLNEG43      5 +Clneg43 -Glneg43 -ELneg4
+VACPOS43     5 +Glpos43 +ELpos4
+VACNEG43     5 +Glneg43 -ELneg4
+VOID43       5 +HIn43 -bar43 -Hneg4 +Hpos4|+Void43 -HOut43 -Hneg4 +Hpos4|+SHolp43 -bar43 -Hpos4 +S1pos4|+CHol43
+               -Clpos43 -S1pos4 +S2pos4|Void43 -Shm43 -Hpos4 + S2pos4|Void43 -S2pos4 -Clpos43|SHoln43 -bar43
+               +Hneg4 -S1neg4|CHol43 -Clneg43 +S1neg4 -S2neg4|Void43 -Shm43 +Hneg4 -S2neg4|Void43 +S2neg4 -Clneg43
+END
+LATTICE        CASE2                                                  lattis2
+LATTICE        CASE3                                                  lattis3
+LATTICE        CASE4                                                  lattis4
+*LATTICE        CASE2                                                  lattis2
+GEOEND
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+* Black hole
+ASSIGNMA    BLCKHOLE   BLKBODY
+* Air subsphere
+ASSIGNMA         AIR       AIR
+* Void
+ASSIGNMA      VACUUM      VOID
+* Support bars
+ASSIGNMA    ALUMINUM    SBO_P1
+ASSIGNMA    ALUMINUM    SBO_N1
+ASSIGNMA         AIR    SBI_P1
+ASSIGNMA         AIR    SBI_N1
+ASSIGNMA    ALUMINUM    SBO_P2
+ASSIGNMA    ALUMINUM    SBO_N2
+ASSIGNMA         AIR    SBI_P2
+ASSIGNMA         AIR    SBI_N2
+ASSIGNMA         OGS     BAR10
+ASSIGNMA    POLYETHY   HOUSE10
+ASSIGNMA    POLYETHY   S1POS10
+ASSIGNMA    POLYETHY   S1NEG10
+ASSIGNMA    POLYETHY   S2POS10
+ASSIGNMA    POLYETHY   S2NEG10
+ASSIGNMA    ALUMINUM   CLPOS10
+ASSIGNMA    ALUMINUM   CLNEG10
+ASSIGNMA       GLASS   GLPOS10
+ASSIGNMA       GLASS   GLNEG10
+ASSIGNMA      VACUUM  VACPOS10
+ASSIGNMA      VACUUM  VACNEG10
+ASSIGNMA         AIR    VOID10
+ASSIGNMA        M600     BAR11
+ASSIGNMA    POLYETHY   HOUSE11
+ASSIGNMA    POLYETHY   S1POS11
+ASSIGNMA    POLYETHY   S1NEG11
+ASSIGNMA    POLYETHY   S2POS11
+ASSIGNMA    POLYETHY   S2NEG11
+ASSIGNMA    ALUMINUM   CLPOS11
+ASSIGNMA    ALUMINUM   CLNEG11
+ASSIGNMA       GLASS   GLPOS11
+ASSIGNMA       GLASS   GLNEG11
+ASSIGNMA      VACUUM  VACPOS11
+ASSIGNMA      VACUUM  VACNEG11
+ASSIGNMA         AIR    VOID11
+ASSIGNMA        M600     BAR20
+ASSIGNMA    ALUMINUM   HOUSE20
+ASSIGNMA    ALUMINUM   S1POS20
+ASSIGNMA    ALUMINUM   S1NEG20
+ASSIGNMA    ALUMINUM   S2POS20
+ASSIGNMA    ALUMINUM   S2NEG20
+ASSIGNMA         AIR    VOID20
+ASSIGNMA         OGS     BAR21
+ASSIGNMA    ALUMINUM   HOUSE21
+ASSIGNMA    ALUMINUM   S1POS21
+ASSIGNMA    ALUMINUM   S1NEG21
+ASSIGNMA    ALUMINUM   S2POS21
+ASSIGNMA    ALUMINUM   S2NEG21
+ASSIGNMA         AIR    VOID21
+ASSIGNMA         OGS     BAR30
+ASSIGNMA    POLYETHY   HOUSE30
+ASSIGNMA    POLYETHY   S1POS30
+ASSIGNMA    POLYETHY   S1NEG30
+ASSIGNMA    POLYETHY   S2POS30
+ASSIGNMA    POLYETHY   S2NEG30
+ASSIGNMA    ALUMINUM   CLPOS30
+ASSIGNMA    ALUMINUM   CLNEG30
+ASSIGNMA       GLASS   GLPOS30
+ASSIGNMA       GLASS   GLNEG30
+ASSIGNMA      VACUUM  VACPOS30
+ASSIGNMA      VACUUM  VACNEG30
+ASSIGNMA         AIR    VOID30
+ASSIGNMA        M600     BAR31
+ASSIGNMA    POLYETHY   HOUSE31
+ASSIGNMA    POLYETHY   S1POS31
+ASSIGNMA    POLYETHY   S1NEG31
+ASSIGNMA    POLYETHY   S2POS31
+ASSIGNMA    POLYETHY   S2NEG31
+ASSIGNMA    ALUMINUM   CLPOS31
+ASSIGNMA    ALUMINUM   CLNEG31
+ASSIGNMA       GLASS   GLPOS31
+ASSIGNMA       GLASS   GLNEG31
+ASSIGNMA      VACUUM  VACPOS31
+ASSIGNMA      VACUUM  VACNEG31
+ASSIGNMA         AIR    VOID31
+ASSIGNMA         OGS     BAR32
+ASSIGNMA    POLYETHY   HOUSE32
+ASSIGNMA    POLYETHY   S1POS32
+ASSIGNMA    POLYETHY   S1NEG32
+ASSIGNMA    POLYETHY   S2POS32
+ASSIGNMA    POLYETHY   S2NEG32
+ASSIGNMA    ALUMINUM   CLPOS32
+ASSIGNMA    ALUMINUM   CLNEG32
+ASSIGNMA       GLASS   GLPOS32
+ASSIGNMA       GLASS   GLNEG32
+ASSIGNMA      VACUUM  VACPOS32
+ASSIGNMA      VACUUM  VACNEG32
+ASSIGNMA         AIR    VOID32
+ASSIGNMA        M600     BAR33
+ASSIGNMA    POLYETHY   HOUSE33
+ASSIGNMA    POLYETHY   S1POS33
+ASSIGNMA    POLYETHY   S1NEG33
+ASSIGNMA    POLYETHY   S2POS33
+ASSIGNMA    POLYETHY   S2NEG33
+ASSIGNMA    ALUMINUM   CLPOS33
+ASSIGNMA    ALUMINUM   CLNEG33
+ASSIGNMA       GLASS   GLPOS33
+ASSIGNMA       GLASS   GLNEG33
+ASSIGNMA      VACUUM  VACPOS33
+ASSIGNMA      VACUUM  VACNEG33
+ASSIGNMA         AIR    VOID33
+ASSIGNMA         OGS     BAR40
+ASSIGNMA    POLYETHY   HOUSE40
+ASSIGNMA    POLYETHY   S1POS40
+ASSIGNMA    POLYETHY   S1NEG40
+ASSIGNMA    POLYETHY   S2POS40
+ASSIGNMA    POLYETHY   S2NEG40
+ASSIGNMA    ALUMINUM   CLPOS40
+ASSIGNMA    ALUMINUM   CLNEG40
+ASSIGNMA       GLASS   GLPOS40
+ASSIGNMA       GLASS   GLNEG40
+ASSIGNMA      VACUUM  VACPOS40
+ASSIGNMA      VACUUM  VACNEG40
+ASSIGNMA         AIR    VOID40
+ASSIGNMA        M600     BAR41
+ASSIGNMA    POLYETHY   HOUSE41
+ASSIGNMA    POLYETHY   S1POS41
+ASSIGNMA    POLYETHY   S1NEG41
+ASSIGNMA    POLYETHY   S2POS41
+ASSIGNMA    POLYETHY   S2NEG41
+ASSIGNMA    ALUMINUM   CLPOS41
+ASSIGNMA    ALUMINUM   CLNEG41
+ASSIGNMA       GLASS   GLPOS41
+ASSIGNMA       GLASS   GLNEG41
+ASSIGNMA      VACUUM  VACPOS41
+ASSIGNMA      VACUUM  VACNEG41
+ASSIGNMA         AIR    VOID41
+ASSIGNMA         OGS     BAR42
+ASSIGNMA    POLYETHY   HOUSE42
+ASSIGNMA    POLYETHY   S1POS42
+ASSIGNMA    POLYETHY   S1NEG42
+ASSIGNMA    POLYETHY   S2POS42
+ASSIGNMA    POLYETHY   S2NEG42
+ASSIGNMA    ALUMINUM   CLPOS42
+ASSIGNMA    ALUMINUM   CLNEG42
+ASSIGNMA       GLASS   GLPOS42
+ASSIGNMA       GLASS   GLNEG42
+ASSIGNMA      VACUUM  VACPOS42
+ASSIGNMA      VACUUM  VACNEG42
+ASSIGNMA         AIR    VOID42
+ASSIGNMA        M600     BAR43
+ASSIGNMA    POLYETHY   HOUSE43
+ASSIGNMA    POLYETHY   S1POS43
+ASSIGNMA    POLYETHY   S1NEG43
+ASSIGNMA    POLYETHY   S2POS43
+ASSIGNMA    POLYETHY   S2NEG43
+ASSIGNMA    ALUMINUM   CLPOS43
+ASSIGNMA    ALUMINUM   CLNEG43
+ASSIGNMA       GLASS   GLPOS43
+ASSIGNMA       GLASS   GLNEG43
+ASSIGNMA      VACUUM  VACPOS43
+ASSIGNMA      VACUUM  VACNEG43
+ASSIGNMA         AIR    VOID43
+* PMMA phantom/target
+ASSIGNMA     PMMAnew    CASING
+ASSIGNMA     PMMAnew    INS1.1
+ASSIGNMA     PMMAnew    INS1.2
+ASSIGNMA     PMMAnew    INS1.3
+ASSIGNMA     PMMAnew    INS1.4
+ASSIGNMA     PMMAnew    INS1.5
+ASSIGNMA     PMMAnew    INS1.6
+ASSIGNMA     PMMAnew    INS1.7
+ASSIGNMA     PMMAnew    INS1.8
+ASSIGNMA     PMMAnew    INS1.9
+ASSIGNMA     PMMAnew   INS1.10
+ASSIGNMA     PMMAnew    INS2.1
+ASSIGNMA     PMMAnew    INS2.2
+ASSIGNMA     PMMAnew    INS2.3
+ASSIGNMA     PMMAnew    INS2.4
+ASSIGNMA     PMMAnew    INS2.5
+ASSIGNMA     PMMAnew    INS2.6
+ASSIGNMA     PMMAnew    INS2.7
+ASSIGNMA     PMMAnew    INS2.8
+ASSIGNMA     PMMAnew    INS2.9
+ASSIGNMA     PMMAnew   INS2.10
+ASSIGNMA         AIR    PROTYP
+* M600 compound material
+MATERIAL                           1.207                              M600
+COMPOUND        5.69  HYDROGEN      3.96    CARBON       0.4  NITROGENM600
+COMPOUND        0.85    OXYGEN                                        M600
+* OGS compound material
+MATERIAL                           1.091                              OGS
+COMPOUND       0.456  HYDROGEN     0.532    CARBON     0.012   SILICONOGS
+* PMMA phantom material
+MATERIAL                            1.18                              PMMAnew
+COMPOUND          5.    CARBON        8.  HYDROGEN        2.    OXYGENPMMAnew
+* Silicate glass (fused quartz)
+MATERIAL                           2.203                              GLASS
+COMPOUND          1.   SILICON        2.    OXYGEN                    GLASS
+* mgdraw .txt-file dumping
+USERDUMP        100.       22.       0.0        1.                    USRDUMP
+* Dose in PMMA phantom
+*USRBIN           10.      DOSE      -23.       7.5       7.5       40.PMMADOSE
+*USRBIN          -7.5      -7.5       0.0       60.       60.       80. &
+* Dose in detector core
+*USRBIN           10.      DOSE      -25.      76.7      12.5      32.2DTCCDOSE
+*USRBIN         51.95     -12.3       7.7       50.       50.       50. &
+* Photon fluence in detector core
+*USRBIN           10.    PHOTON      -26.      76.7      12.5      32.2DTCCgFLU
+*USRBIN         51.95     -12.3       7.7       50.       50.       50. &
+* Neutron fluence in detector core
+*USRBIN           10.   NEUTRON      -27.      76.7      12.5      32.2DTCCnFLU
+*USRBIN         51.95     -12.3       7.7       50.       50.       50. &
+* Set the random number seed
+RANDOMIZ          1.741511143.
+START        150000.
+STOP
