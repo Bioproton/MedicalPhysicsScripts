@@ -12,6 +12,7 @@ import csv
 import math
 import pandas as pd
 import sys
+from mgdraw_txt_file_reader_vAMB import collect_txt_data
 from time_converter_NOVO import convert_time
 import matplotlib.pyplot as plt
 
@@ -35,7 +36,7 @@ class DetectionDataStorage:
             "ncase", "icode", "particle_in", "particle_out", "fnpg_flag",
             "targetZ", "targetA", "energy_out", "energy_in",
             "crash_x", "crash_y", "crash_z", "region", "particle_generation",
-            "particle_age", "source_x", "source_y", "source_z", "prod_energy"
+            "particle_age", "source_x", "source_y", "source_z", "mreg_prod"
             ])
         self.detector = detector
         
@@ -54,12 +55,7 @@ class DetectionDataStorage:
         self.double_gamma_events = []
         self.triple_gamma_events = []       # Default
 
-    def load_data(self, mgdraw_version_8_plus=True) -> None:
-
-        if mgdraw_version_8_plus is False:
-            from mgdraw_v05_output_reader import collect_txt_data  # Used for mgdraw data from mgdraw.f versions v07 or lower
-        else:
-            from mgdraw_txt_file_reader_06 import collect_txt_data    # Used for mgdraw data from mgdraw.f versions v08 or higher
+    def load_data(self) -> None:    
             
         folder = os.listdir(self.folder_path)
         n_files = len(os.listdir(self.folder_path))
@@ -265,16 +261,16 @@ class DetectionDataStorage:
             raw_ncase_hit_history = np.array(raw_ncase_hit_history)
             raw_all_hit_histories.append(raw_ncase_hit_history)
             
-        print(f"Raw hit filtering complete. Time used: {round(time.time() - time_stamp, 2)} s")
-        print(f"Total number of lines: {len(self.data)}")
+        #print(f"Raw hit filtering complete. Time used: {round(time.time() - time_stamp, 2)} s")
+        #print(f"Total number of lines: {len(self.data)}")
         lines_kept = sum([len(i) for i in raw_all_hit_histories])
         lines_rejected = len(self.data) - lines_kept
-        print(f"Number of lines kept: {sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_kept / len(self.data), 1)}%)")
-        print(f"Number of lines rejected: {len(self.data) - sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_rejected / len(self.data), 1)}%)")
+        #print(f"Number of lines kept: {sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_kept / len(self.data), 1)}%)")
+        #print(f"Number of lines rejected: {len(self.data) - sum([len(i) for i in raw_all_hit_histories])} ({round(100 * lines_rejected / len(self.data), 1)}%)")
 
 
         #-----------HIT MERGING-----------
-        print(f"\n-----------HIT MERGING-----------")
+        #print(f"\n-----------HIT MERGING-----------")
         time_stamp = time.time()
 
         # Step 1: Merge hits within the same bar within 400 ns (0.4 µs) [from the same NCASE]
@@ -318,8 +314,8 @@ class DetectionDataStorage:
                 
         time_merged_all_hit_histories = np.array(time_merged_all_hit_histories, dtype=object)
 
-        print(f"Merging complete. Time used: {round(time.time() - time_stamp, 2)} s")
-        print(f"Overlaps found: {overlap_num}")
+        #print(f"Merging complete. Time used: {round(time.time() - time_stamp, 2)} s")
+        #print(f"Overlaps found: {overlap_num}")
 
         # Saving values and removing self.data from memory
         self.data = None
@@ -369,10 +365,10 @@ class DetectionDataStorage:
         # All hits are the combination of the rest (allows differential energy cutting)
         self.all_hits = np.concatenate((self.gamma_hits, self.neutron_hits, self.combo_hits))
         
-        print(f"Total number of hit histories > 10/200 keV: {len(self.all_hits)}")
-        print(f"Number of gamma hit histories > 10 keV: {len(self.gamma_hits)}")
-        print(f"Number of neutron hit histories > 200 keV: {len(self.neutron_hits)}")
-        print(f"Number of combo hit histories > 200 keV: {len(self.combo_hits)}")
+        #print(f"Total number of hit histories > 10/200 keV: {len(self.all_hits)}")
+        #print(f"Number of gamma hit histories > 10 keV: {len(self.gamma_hits)}")
+        #print(f"Number of neutron hit histories > 200 keV: {len(self.neutron_hits)}")
+        #print(f"Number of combo hit histories > 200 keV: {len(self.combo_hits)}")
 
         if write_hits_to_file == True:
 
