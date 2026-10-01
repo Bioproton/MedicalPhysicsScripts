@@ -1,7 +1,17 @@
 Repository of code used for the detection side of NOVO WP3
 
-Fortran code for FLUKA is found in folder "Fortran_code"
+Includes four folders:
+ - FLUKA:
+    - Scripts related to running FLUKA MC simulations
+        - .inp-files
+        - mgdraw
+        - running_automation
 
-Python code for postprocessing and plotting FLUKA-output is found in folder "Python_code"
+- Misc.: 
+    - Miscellanous scripts
 
-NOVO_detector_backup250630.inp is the FLUKA input file for the current NOVCoDA model with 2 mm hollow electronic boxes
+- Plotting:
+    - Scripts used mainly for plotting 
+
+- Post-processing:
+    - Post-proccessing scripts for FLUKA output (scintillator_interactions.txt)
