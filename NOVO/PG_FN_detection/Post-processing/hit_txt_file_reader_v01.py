@@ -11,6 +11,7 @@ def collect_txt_data(file_adress) -> str:
     file_adress = file_adress.replace("\\", "/")
 
     import time
+    import numpy as np
     print("Collecting data: ", end="")
     time_stamp = time.time()
 
@@ -74,8 +75,8 @@ def collect_txt_data(file_adress) -> str:
         source_z.append(float(line.split(" ")[17])) # [cm]                  
 
     print(f"\rCollecting data: complete. {n} lines read. Time used: {round(time.time() - time_stamp, 3)} s", flush=True)
-    return [ncase, icode, particle_in, particle_out, fnpg_flag, \
+    return np.array([ncase, icode, particle_in, particle_out, fnpg_flag, \
         targetZ, targetA, energy_out, energy_in, \
         crash_x, crash_y, crash_z, \
         region, particle_generation, particle_age, \
-        source_x, source_y, source_z]
+        source_x, source_y, source_z])
