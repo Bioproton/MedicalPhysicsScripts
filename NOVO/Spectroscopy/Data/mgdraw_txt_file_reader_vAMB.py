@@ -5,6 +5,7 @@ is only performed once.
 
 Relevant data entries are saved in lists. 
 """
+import numpy as np
 
 def collect_txt_data(file_adress, primaries_per_spawn=1e7, spawn_number=1) -> str:
     # Function that will collect all data from a usdraw txt output file from mgdraw_v05_detection.f 
@@ -192,6 +193,101 @@ def collect_txt_data_less_inputs(file_adress, primaries_per_spawn=1e7, spawn_num
             source_x.append(float(line.split(" ")[15]))
             source_y.append(float(line.split(" ")[16]))
             source_z.append(float(line.split(" ")[17]))
+                      
+
+    #print(f"\rCollecting data: complete. {n} lines read. Time used: {round(time.time() - time_stamp, 3)} s", flush=True)
+    return [ncase, icode, particle_in, particle_out, fnpg_flag, \
+        targetZ, targetA, energy_out, energy_in, \
+        crash_x, crash_y, crash_z, \
+        region, particle_generation, particle_age, \
+        source_x, source_y, source_z, mreg_prod]
+
+
+def collect_npz_data(file_adress, primaries_per_spawn=1e7, spawn_number=1) -> str:
+    # Function that will collect all data from a usdraw txt output file from mgdraw_v05_detection.f 
+    # Input is the adress for the file (where it is stored). Only _detected.txt-files as of 23.04.2025 works correctly
+    # Optional input of the number primaries set in the FLUKA input. This is to ensure unique NCASE identifiers per proton, which might be the same across different spawns
+
+    file_adress = file_adress.replace("\\", "/")
+
+    import time
+    #print("Collecting data: ", end="")
+    time_stamp = time.time()
+
+    #file = open(file_adress, "r")
+    data = np.load(file_adress)
+
+    n = 0   # Line counter
+    
+    # Structure of detector output file for spectroscopy purposes: mreg added in front, production nucleus also there (not saved as of now)
+    mreg_prod = data["mreg_prod"]
+    #double check NCASE?
+    ncase = np.array(data["mreg_prod"]) + (spawn_number - 1)*primaries_per_spawn # NCASE values: What primary proton created the secondaries we are investigating?
+    icode = data["icode"] # Interaction codes (ICODES): What kind of interaction happened?  
+    particle_in = data["jtrack"]# JTRACK values: What particle initiated the interaction?
+    particle_out = data["kpart"]  # KPART(IP) values: What secondary resulted from the interaction?
+    fnpg_flag = data["llouse_list"] # LLOUSE values: Does the interaction stem directly from target FN/PG-production?
+
+    targetZ = data["ICHTAR"]   # ICHTAR values: What is the Z-value of the target particle?
+    targetA = data["IBTAR"]   # IBTAR values: What is the A-value of the target particle?
+    energy_out = 1000*np.array(data["tki"]) # Tki(IP) values: What is the kinetic energy of the secondary? [GeV -> MeV]
+    energy_in = 1000*np.array(data["etrack_m_am_track"])  # ETRACK-AM(JTRACK) values: What was the kinetic energy of the incoming particle? [GeV -> MeV]
+
+    crash_x = data["XSCO"] # XSCO values: What was the X-coordinate of the interaction?   [cm]
+    crash_y = data["YSCO"] # YSCO values: What was the Y-coordinate of the interaction?   [cm]
+    crash_z = data["ZSCO"] # ZSCO values: What was the Z-coordinate of the interaction?   [cm]
+
+    region = data["mreg"]    # MREG values: What scintillator bar did the interaction happen?
+    particle_generation = data["ltrack"]  # LTRACK values: What "generation" was the incoming particle?
+    particle_age = data["atrack"]   # ATRACK * 1E6 values: At what time (since primary production) did the interaction happen? [µs]
+    
+    source_x = data["XSCO_prod"] # SPAUSR(2) values: At what X-coordinate in the target was the FN/PG produced?    [cm]
+    source_y = data["YSCO_prod"] # SPAUSR(3) values: At what Y-coordinate in the target was the FN/PG produced?    [cm]
+    source_z = data["ZSCO_prod"] # SPAUSR(4) values: At what Z-coordinate in the target was the FN/PG produced?    [cm]
+
+
+    '''
+    # Looping over all lines in the file
+    for line in file:
+        if "Spawn number:" in line:
+            spawn_number = int(line.split(":")[1].strip().split(" ")[0]) # Spawn number in the FLUKA run. Used for altering NCASE values 
+            continue    # Spawn number lines should be skipped, they don't contain other information than spawn number
+
+        # If "***********" is in a line, it means that not enough space has been allocated to a feature value.
+        # This has so far only happened for particle age for neutrons. I choose to skip these entries.
+        if "***********" in line:
+            print(f"*********** found in file {file}")
+            print(f"Line: {line}")
+            continue
+        else:
+            line = " ".join(line.split()) # Remove all spaces, while leaving one space between each value. Spaces in output file might not be universal
+            n += 1  # Increment line counter
+
+            mreg_prod.append(int(line.split(" ")[0]))
+
+            # Collecting all data from the output.txt file
+            ncase.append(int(line.split(" ")[1]) + (spawn_number - 1) * primaries_per_spawn) # Avoiding equal NCASEs in two different spawns. Example: NCASE 303 in spawn 4 for 2000 primaries is now NCASE 6303 [303 (4-1)*2000 = 6303]
+            icode.append(int(line.split(" ")[2]))
+            particle_in.append(int(line.split(" ")[3]))
+            particle_out.append(int(line.split(" ")[4]))
+            fnpg_flag.append(int(line.split(" ")[5]))
+
+            targetZ.append(int(line.split(" ")[6]))
+            targetA.append(int(line.split(" ")[7]))
+            energy_out.append(round(float(line.split(" ")[10]) * 1000, 5)) # Multiplied by 1000 to get MeV from GeV
+            energy_in.append(round(float(line.split(" ")[11]) * 1000, 5))  # Multiplied by 1000 for get MeV from Gev
+
+            crash_x.append(float(line.split(" ")[12]))
+            crash_y.append(float(line.split(" ")[13]))
+            crash_z.append(float(line.split(" ")[14]))
+
+            region.append(int(line.split(" ")[15]))
+            particle_generation.append(int(line.split(" ")[16]))
+            particle_age.append(float(line.split(" ")[17])) # Time in [µs]
+
+            source_x.append(float(line.split(" ")[18]))
+            source_y.append(float(line.split(" ")[19]))
+            source_z.append(float(line.split(" ")[20]))'''
                       
 
     #print(f"\rCollecting data: complete. {n} lines read. Time used: {round(time.time() - time_stamp, 3)} s", flush=True)

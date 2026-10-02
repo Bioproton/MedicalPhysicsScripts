@@ -12,7 +12,7 @@ import csv
 import math
 import pandas as pd
 import sys
-from mgdraw_txt_file_reader_vAMB import collect_txt_data, collect_txt_data_less_inputs
+from mgdraw_txt_file_reader_vAMB import collect_txt_data, collect_txt_data_less_inputs, collect_npz_data
 from time_converter_NOVO import convert_time
 import matplotlib.pyplot as plt
 
@@ -55,7 +55,7 @@ class DetectionDataStorage:
         self.double_gamma_events = []
         self.triple_gamma_events = []       # Default
 
-    def load_data(self, number_of_parameters_20 = True) -> None:    
+    def load_data(self, number_of_parameters_20 = True, npz = False) -> None:    
             
         folder = os.listdir(self.folder_path)
         n_files = len(os.listdir(self.folder_path))
@@ -69,7 +69,7 @@ class DetectionDataStorage:
         for filename in folder:
             
             # Skip any other files
-            if "scintillator_interactions.txt" not in filename:
+            if "scintillator_interactions" not in filename:
                 break
 
             m += 1  # Incement file counter
@@ -78,6 +78,8 @@ class DetectionDataStorage:
                 break
             if number_of_parameters_20: 
                 data_entry = collect_txt_data(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m) # Shape [eg. (3000, 1), ..., (3000, 1)]
+            elif npz:
+                data_entry = collect_npz_data(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m)
             else: 
                 data_entry = collect_txt_data_less_inputs(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m) # Shape [eg. (3000, 1), ..., (3000, 1)]
             self.data.append(data_entry)
@@ -352,21 +354,21 @@ class DetectionDataStorage:
         
         # Convert lists into numpy arrays
         self.gamma_hits = np.concatenate(self.gamma_hits, axis=0)
-    #    self.neutron_hits = np.concatenate(self.neutron_hits, axis=0)
-    #    self.combo_hits = np.concatenate(self.combo_hits, axis=0)
+        self.neutron_hits = np.concatenate(self.neutron_hits, axis=0)
+        self.combo_hits = np.concatenate(self.combo_hits, axis=0)
 
         # Remove all singular hits that contribute negatively, and that has not been merged ("negative" energy deposit)        
         self.gamma_hits = self.gamma_hits[~np.isin(self.gamma_hits[:, 1], [103, 208, 214])]
-    #    self.neutron_hits = self.neutron_hits[~np.isin(self.neutron_hits[:, 1], [103, 208, 214])]
-    #    self.combo_hits = self.combo_hits[~np.isin(self.combo_hits[:, 1], [103, 208, 214])]
+        self.neutron_hits = self.neutron_hits[~np.isin(self.neutron_hits[:, 1], [103, 208, 214])]
+        self.combo_hits = self.combo_hits[~np.isin(self.combo_hits[:, 1], [103, 208, 214])]
 
         # Filter away hits with energy deposit lower than 10 keV (gammas) and 200 keV (neutrons)
         self.gamma_hits = self.gamma_hits[~(self.gamma_hits[:, 7] < 0.010)]  # Remove instances where the energy deposit is lower than 10 keV
-    #    self.neutron_hits = self.neutron_hits[~(self.neutron_hits[:, 7] < 0.200)]  # Remove instances where the energy deposit is lower than 200 keV
-    #    self.combo_hits = self.combo_hits[~(self.combo_hits[:, 7] < 0.200)]  # Remove instances where the energy deposit is lower than 10 keV
+        self.neutron_hits = self.neutron_hits[~(self.neutron_hits[:, 7] < 0.200)]  # Remove instances where the energy deposit is lower than 200 keV
+        self.combo_hits = self.combo_hits[~(self.combo_hits[:, 7] < 0.200)]  # Remove instances where the energy deposit is lower than 10 keV
 
         # All hits are the combination of the rest (allows differential energy cutting)
-    #    self.all_hits = np.concatenate((self.gamma_hits, self.neutron_hits, self.combo_hits))
+        self.all_hits = np.concatenate((self.gamma_hits, self.neutron_hits, self.combo_hits))
         
         #print(f"Total number of hit histories > 10/200 keV: {len(self.all_hits)}")
         #print(f"Number of gamma hit histories > 10 keV: {len(self.gamma_hits)}")
@@ -385,7 +387,7 @@ class DetectionDataStorage:
 
             gamma_file.close()
             print(self.folder_path[:-25] + r"gamma_hits.txt successfully created")
-            '''
+            
             # Writing neutron hit file
             with open(self.folder_path[:-25] + r"neutron_hits.txt", "w") as neutron_file:
                 for hit in self.neutron_hits:
@@ -406,7 +408,7 @@ class DetectionDataStorage:
                     all_hits_file.write(hit_str + "\n")
             
             all_hits_file.close()
-            print(self.folder_path[:-25] + r"all_hits.txt successfully created")'''
+            print(self.folder_path[:-25] + r"all_hits.txt successfully created")
 
 
     def _merge_hits(self, hit_array, time_limit=0.4):
