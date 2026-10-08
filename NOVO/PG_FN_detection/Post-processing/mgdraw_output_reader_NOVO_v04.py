@@ -404,8 +404,8 @@ class DetectionDataStorage:
                 region_mask = all_hit_regions == region_number  # Only use hits occuring in this region (mask)
 
                 hits_in_region = self.all_hits[region_mask] # Select hits in this region
-                time_order = np.argsort(hits_in_region[:, 14])  # Chronologic order of hits (FLUKA times [µs])
-                hits_in_region = hits_in_region[time_order] # Order times
+                time_order = np.argsort(hits_in_region[:, 14])  # Chronologic order of hits (FLUKA times [µs])  # Remove
+                hits_in_region = hits_in_region[time_order] # Order times                                       # Remove
 
                 hits_in_region_times = hits_in_region[:, 14]    # Times for hits in this region
                 time_differences = np.diff(hits_in_region_times)    # Time differences (NB: times have been ordered)
@@ -452,8 +452,8 @@ class DetectionDataStorage:
             new_all_hits = np.array(new_all_hits)   # Convert to numpy array
 
             # Resort order of hits to scale after NCASE
-            NCASEs_order = np.argsort(new_all_hits[:, 0]) # Rising order of NCASEs
-            new_all_hits = new_all_hits[NCASEs_order] # Resort data
+            NCASE_Time_order = np.lexsort((new_all_hits[:, 0], new_all_hits[:, 14])) # Rising order of NCASEs and then time                            
+            new_all_hits = new_all_hits[NCASE_Time_order] # Resort data             
 
             print(f"\nSecond hit merging prior to threshold filtering complete. Time used: {round(time.time() - time_stamp, 3)} s")
             print(f"Invidual hits before second merging: {len(all_hit_regions)}")
@@ -963,7 +963,7 @@ class DetectionDataStorage:
         # Indicies: 12, 7, 9, 10, 11, 14
         # My times are in µs, so they are multiplied by 1000 to gain ns
         for hit in event:
-            hit_string = f" {int(hit[12])}  {round(hit[7], 5)} {hit[9]} {hit[10]} {hit[11]} {1000 * round(hit[14], 3)} ,"
+            hit_string = f" {int(hit[12])}  {round(hit[7], 5)} {hit[9]} {hit[10]} {hit[11]} {round(1000 * hit[14], 3)} ,"
             final_string += hit_string
         
         return final_string
