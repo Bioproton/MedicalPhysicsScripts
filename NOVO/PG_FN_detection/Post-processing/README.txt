@@ -16,8 +16,9 @@ Scripts for post-processing FLUKA output using mgdraw
             - Optional: Rescales time stamps to a given beam current / beam structure 
             - Optional: outputs gamma_hits.txt, neutron_hits.txt and all_hits.txt files
         .event_builder()
-            - Builds coincidence events (triple gamma-ray, double neutron)
-            - Optional: outputs .inp files for ngimager (backprojection imaging code)
+            - Builds coincidence events (triple gamma-ray, double neutron) + (double gamma-ray, triple neutron)
+        .write_ngimager_output()
+            - outputs .out files for ngimager (backprojection imaging code)
 
 
 - mgdraw_v05_output_reader.py -> Obsolete!
