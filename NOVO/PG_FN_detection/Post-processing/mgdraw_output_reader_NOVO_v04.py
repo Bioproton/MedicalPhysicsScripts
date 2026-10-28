@@ -26,7 +26,8 @@ class DetectionDataStorage:
             primaries_per_spawn: int = 10000000, 
             max_files: int = 100,
             lattice_usage: bool = False,
-            FLUKA_to_meas_coords: bool=False
+            FLUKA_to_meas_coords: bool=False,
+            detector_distance: str = 54.2
         ) -> None:
 
         self.folder_path = folder_path.replace("\\", "/")
@@ -40,6 +41,7 @@ class DetectionDataStorage:
             ])
         self.lattice_usage = lattice_usage
         self.FLUKA_to_meas_coords = FLUKA_to_meas_coords
+        self.detector_distance = detector_distance
         
         # List variable to store all entries from the N number of "scintillator_interaction.txt"-files
         self.data = []
@@ -86,7 +88,7 @@ class DetectionDataStorage:
             data_entry = collect_txt_data(
                 self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn, 
                 spawn_number=m, FLUKA_to_meas_coords=self.FLUKA_to_meas_coords, 
-                lattice_usage=self.lattice_usage, mgdraw_version_8_plus=mgdraw_version_8_plus) # Shape [eg. (3000, 1), ..., (3000, 1)]
+                lattice_usage=self.lattice_usage, mgdraw_version_8_plus=mgdraw_version_8_plus, detector_distance=self.detector_distance) # Shape [eg. (3000, 1), ..., (3000, 1)]
             self.data.append(data_entry)
 
         self.data = np.transpose(np.concatenate(self.data, axis=1))
@@ -116,8 +118,8 @@ class DetectionDataStorage:
 
         # Burner variables
         self.all_hits = []    # All hit histories
-        self.gamma_hits = []  # All hit histories for gammas, ICODE = [219, 217, 221] minus [208, 214]
-        self.neutron_hits = []    # All hit histories for neutrons, ICODE = [100, 101, 103, 106, 300]
+        self.gamma_hits = []  # All hit histories for gammas, ICODE = [219, 217, 221] minus [208, 214, 103]
+        self.neutron_hits = []    # All hit histories for neutrons, ICODE = [100, 101, 106, 300]
         self.combo_hits = []  # All hit histories where multiple interactions in the same scintillator are a combination of gamma + neutron
 
         # Time recorder
@@ -127,7 +129,7 @@ class DetectionDataStorage:
 
         # Collecting all the data and storing them in more descriptive variables
         ncases = self.data[:, 0]
-        rejected_icodes = np.array([225, 210, 212, 215, 102])  # Rayleigh, Møller, Bhabha, Annihilation at rest, Particle radioactive decay
+        rejected_icodes = np.array([225, 210, 212, 215, 102, 103])  # Rayleigh, Møller, Bhabha, Annihilation at rest, Particle radioactive decay, delta-ray generation
 
         if len(ncases) > 1:
             ncase_change_idx = np.where(np.diff(ncases) != 0)[0] + 1
@@ -138,16 +140,19 @@ class DetectionDataStorage:
 
         for current_ncase_data in ncase_groups:
             
-            prod = current_ncase_data[:, 15:18]
+            #prod = current_ncase_data[:, 15:18]
+            prod = current_ncase_data[:, 15]
             if len(current_ncase_data) > 1:
-                prod_change = np.where(np.any(np.diff(prod, axis=0) != 0, axis=1))[0] + 1
+                #prod_change = np.where(np.any(np.diff(prod, axis=0) != 0, axis=1))[0] + 1
+                prod_change = np.where(np.diff(prod) != 0)[0] + 1
                 prod_groups = np.split(current_ncase_data, prod_change)
             else:
                 prod_groups = [current_ncase_data]
 
             for grp in prod_groups:
                 
-                init_prod_coord = grp[0, 15:18].copy()
+                #init_prod_coord = grp[0, 15:18].copy()
+                init_prod_coord = grp[0, 15].copy
                 raw_ncase_hit_history = []  # Will store hits for the current ncase x production coordinate
                 
                 # Extract icodes for iteration
@@ -158,10 +163,12 @@ class DetectionDataStorage:
                 for index, icode in enumerate(icodes):
 
                     
-                    if not np.array_equal(grp[index, 15:18], init_prod_coord):
+                    #if not np.array_equal(grp[index, 15:18], init_prod_coord):
+                    if not np.array_equal(grp[index, 15], init_prod_coord):
                         if raw_ncase_hit_history != []:
                             raw_all_hit_histories.append(np.array(raw_ncase_hit_history))
-                        init_prod_coord = grp[index, 15:18]
+                        #init_prod_coord = grp[index, 15:18]
+                        init_prod_coord = grp[index, 15]
                         raw_ncase_hit_history = []
 
                     raw_hit = grp[index].copy() 
@@ -175,6 +182,7 @@ class DetectionDataStorage:
 
                         # Skip scattered photon entry
                         if raw_hit[3] == 7:
+                            # TODO: Save information on scattered photon direction (for Sara)
                             continue
 
                     # Photoelectric effect : [7, 3]
@@ -212,6 +220,7 @@ class DetectionDataStorage:
 
                         # Either a single [8, 8]-hit or an entry that is followed up by [8, -2] / [8, 1]
                         elif raw_hit[2] == 8 and raw_hit[3] == 8:
+                            # TODO: Save information on scattered neutron direction for the following [8, -2] / [8, 1] hit
                             continue 
                             
                         # Skip scattered deutereon in [-3, -3] -> [-3, 1]-hit
@@ -223,18 +232,19 @@ class DetectionDataStorage:
 
                         # Skip entries on neutron-neutron scatters
                         if raw_hit[3] == 8:
+                            # TODO: Save information on scattered neutron direction for a potential following [8, -2] / [8, 1]-entry
                             continue
 
                         # Skip proton-deutereon scatter
                         elif raw_hit[2] == 1 and raw_hit[3] == -3:
                             continue
 
-                    # Delta-ray generation [1, 1] -> [1, 3] or [-3, -3] -> [-3, 3]
-                    elif icode == 103: 
-                        
-                        # Skip entries with scattered proton/deuteron (that created the electron)
-                        if raw_hit[3] == 1 or raw_hit[3] == -3:
-                            continue
+                    ## Delta-ray generation [1, 1] -> [1, 3] or [-3, -3] -> [-3, 3]
+                    #elif icode == 103: 
+                    #    
+                    #    # Skip entries with scattered proton/deuteron (that created the electron)
+                    #    if raw_hit[3] == 1 or raw_hit[3] == -3:
+                    #        continue
                         
                     # De-exicitation in-flight (usually production of PG)
                     elif icode == 106:
@@ -258,7 +268,7 @@ class DetectionDataStorage:
                             continue
 
                     # Remove cross-scatter hits between lattice copies
-                    if self.lattice_usage == True:
+                    if self.lattice_usage:
                         if raw_hit[6] == 1:
                             continue
                 
@@ -351,7 +361,8 @@ class DetectionDataStorage:
             icodes = hit_history[:, 1]
             
             for icode in icodes:
-                if icode in [217, 219, 221, 103]:  # 208s and 214s are excluded. They cannot be "singular hits", aka "negative" energy deposit. 103 is counted as gamma. Delta-ray generation threshold: 100 keV
+                #if icode in [217, 219, 221, 103]:  # 208s and 214s are excluded. They cannot be "singular hits", aka "negative" energy deposit. 103 is counted as gamma. Delta-ray generation threshold: 100 keV
+                if icode in [217, 219, 221]:  # 208s and 214s are excluded. They cannot be "singular hits", aka "negative" energy deposit
                     gamma = True
                 elif icode in [100, 101, 106, 300, 99]:
                     neutron = True
@@ -375,11 +386,14 @@ class DetectionDataStorage:
         
 
         # Remove all singular hits that contribute negatively, and that has not been merged ("negative" energy deposit)        
-        self.gamma_hits = self.gamma_hits[~np.isin(self.gamma_hits[:, 1], [103, 208, 214])]
+        #self.gamma_hits = self.gamma_hits[~np.isin(self.gamma_hits[:, 1], [103, 208, 214])]
+        self.gamma_hits = self.gamma_hits[~np.isin(self.gamma_hits[:, 1], [208, 214])]
         if len(self.neutron_hits) > 0:
-            self.neutron_hits = self.neutron_hits[~np.isin(self.neutron_hits[:, 1], [103, 208, 214])]
+            #self.neutron_hits = self.neutron_hits[~np.isin(self.neutron_hits[:, 1], [103, 208, 214])]
+            self.neutron_hits = self.neutron_hits[~np.isin(self.neutron_hits[:, 1], [208, 214])]
         if len(self.combo_hits) > 0:
-            self.combo_hits = self.combo_hits[~np.isin(self.combo_hits[:, 1], [103, 208, 214])]
+            #self.combo_hits = self.combo_hits[~np.isin(self.combo_hits[:, 1], [103, 208, 214])]
+            self.combo_hits = self.combo_hits[~np.isin(self.combo_hits[:, 1], [208, 214])]
 
         # self.all_hits are the combination of the rest (allows differential energy cutting)
         if len(self.neutron_hits) > 0:
@@ -421,7 +435,7 @@ class DetectionDataStorage:
                     # Only merge instances where it cointains more than one hit
                     if len(hits_to_merge) > 1:
 
-                        if self.lattice_usage is True:
+                        if self.lattice_usage:
 
                             # Figure out which hits to merge and not, based on the detector/lattice copy it hits
                             detector_ids = hits_to_merge[:, 5]  # Lattice copy ids
@@ -594,7 +608,8 @@ class DetectionDataStorage:
             
 
             for index, icode in enumerate(icodes):
-                if icode in [217, 219, 221, 103]:
+                #if icode in [217, 219, 221, 103]:
+                if icode in [217, 219, 221]:
                     # All these energies contribute positively 
                     # 103 is noted as a gamma because I assume you cannot know whether this electron comes from a gamma or not
                     total_energy_deposited += hits_2_be_merged[index, 7]
@@ -660,7 +675,7 @@ class DetectionDataStorage:
         99 (Deutereon decay): +
         100 (Elastic collision) [Proton, HeavyIon]: +
         101 (Inelastic collision) [Proton, Alpha, HeavyIon]: +    (Chaotic)
-        103 (Delta ray-generation) [Electron]: +
+        # REMOVED PER 28.10.26: 103 (Delta ray-generation) [Electron]: +
         106 (PG de-excitation) [HeavyIon]: +
         300 (Elastic collision, Ek_n < 20 MeV) [Proton, HeavyIon]: +
 
@@ -703,7 +718,7 @@ class DetectionDataStorage:
         return clusters
 
 
-    def _coordinate_transform(coordinates):
+    def _coordinate_transform(coordinates, detector_shift=54.2):
         """
         Takes in coordinates [x, y, z] and translates them
         FROM FLUKA coordinates 
@@ -718,7 +733,7 @@ class DetectionDataStorage:
             [1, 0, 0]])
         
         # Origin shift
-        s = np.array([-54.2, 0, -20])   # cm
+        s = np.array([-detector_shift, 0, -20])   # cm
 
         # Numpify FLUKA coordinate
         u_FLUKA = np.array(coordinates)
@@ -795,20 +810,23 @@ class DetectionDataStorage:
 
         event = []  #[[hit1], [hit2], [hit3], ..., [hitN]]
         particle_events = []    # [[[hit1], [hit2], [hit3]], [[hit1], [hit2]], ...] # Final event list, i.e. self.gamma_events or self.neutron_events
-        event_ID = [0, 0.0, 0.0, 0.0]   # [NCASE, prodX, prodY, prodZ], ID to sort hits into the same event
+        event_ID = [0, 0.0]   # [NCASE, prodX, prodY, prodZ], ID to sort hits into the same event
 
         for hit in hit_array:
 
             # A change in event_ID means that there is a new event
-            if event_ID != [hit[0], hit[15], hit[16], hit[17]]:
+            #if event_ID != [hit[0], hit[15], hit[16], hit[17]]:
+            if event_ID != [hit[0], hit[15]]:
 
                 # Add the event if it is not the beginning event
-                if event_ID != [0, 0.0, 0.0, 0.0]:
+                #if event_ID != [0, 0.0, 0.0, 0.0]:
+                if event_ID != [0, 0.0]:
                     particle_events.append(event)
 
                 # Reset event
                 event = [hit]
-                event_ID = [hit[0], hit[15], hit[16], hit[17]]
+                #event_ID = [hit[0], hit[15], hit[16], hit[17]]
+                event_ID = [hit[0], hit[15]]
 
             else:
                 event.append(hit)
