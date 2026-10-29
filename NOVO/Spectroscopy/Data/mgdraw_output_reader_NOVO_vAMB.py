@@ -79,6 +79,7 @@ class DetectionDataStorage:
             if number_of_parameters_20: 
                 data_entry = collect_txt_data(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m) # Shape [eg. (3000, 1), ..., (3000, 1)]
             elif npz:
+                print("using collect_npz_data")
                 data_entry = collect_npz_data(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m)
             else: 
                 data_entry = collect_txt_data_less_inputs(self.folder_path + "\\" + filename, primaries_per_spawn=self.primaries_per_spawn , spawn_number=m) # Shape [eg. (3000, 1), ..., (3000, 1)]
