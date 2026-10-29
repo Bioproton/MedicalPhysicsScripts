@@ -222,7 +222,7 @@ def collect_npz_data(file_adress, primaries_per_spawn=1e7, spawn_number=1) -> st
     # Structure of detector output file for spectroscopy purposes: mreg added in front, production nucleus also there (not saved as of now)
     mreg_prod = data["mreg_prod"]
     #double check NCASE?
-    ncase = np.array(data["mreg_prod"]) + (spawn_number - 1)*primaries_per_spawn # NCASE values: What primary proton created the secondaries we are investigating?
+    ncase = np.array(data["ncase"]) + (spawn_number - 1)*primaries_per_spawn # NCASE values: What primary proton created the secondaries we are investigating?
     icode = data["icode"] # Interaction codes (ICODES): What kind of interaction happened?  
     particle_in = data["jtrack"]# JTRACK values: What particle initiated the interaction?
     particle_out = data["kpart"]  # KPART(IP) values: What secondary resulted from the interaction?
